@@ -28,9 +28,11 @@ const template = `
     </md-menu>
   </div>
 </md-toolbar>
-<md-content class="md-padding">
-  <div ui-view="content"></div>
-</md-content>
+<div ui-view="base">
+  <md-content class="md-padding">
+    <div ui-view="content"></div>
+  </md-content>
+</div>
 `;
 
 angular.module(modName, [
@@ -55,13 +57,9 @@ angular.module(modName).config(($stateProvider) => {
   $stateProvider.state('app', {
     abstract: true,
     url: '/app',
-    views: {
-      'base@': {
-        controllerAs: 'app',
-        controllerProvider: (AppController) => AppController,
-        template: template
-      }
-    },
+    controllerAs: 'app',
+    controllerProvider: (AppController) => AppController,
+    template: template,
     resolve: {
       loginUser: ($firebaseArray, Auth, rootRef) => {
         return Auth.$waitForAuth()
