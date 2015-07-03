@@ -1,8 +1,6 @@
 import angular from 'angular';
-import uiRouterModule from 'angular-ui-router';
+import commonModules from '../common-modules';
 import authModule from '../services/auth';
-
-const modName = 'egrid.components.login';
 
 const template = `
 <md-button class="md-icon-button" ui-sref="app.home">
@@ -22,14 +20,16 @@ const template = `
 </form>
 `;
 
+const modName = 'egrid.components.login';
+
 angular.module(modName, [
-  uiRouterModule,
+  commonModules,
   authModule
 ]);
 
 angular.module(modName).factory('LoginController', ($state, Auth) => {
   return class LoginController {
-    constructor(auth) {
+    constructor() {
       this.form = {};
     }
 
@@ -40,7 +40,7 @@ angular.module(modName).factory('LoginController', ($state, Auth) => {
           password: this.form.password
         })
         .then(() => {
-          $state.go('app.home');
+          $state.go('app.home', null, {reload: true});
         });
     }
   };

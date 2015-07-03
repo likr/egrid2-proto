@@ -13,7 +13,7 @@ const template = `
   <md-toolbar>
     <div class="md-toolbar-tools">
       <h3 class="md-title">
-        <a ui-sref="app.project.detail.participant.detail({projectId: participantList.project.$id, participantId: participant.$id})">{{participant.name}}</a>
+        <a ui-sref="app.projects.detail.participant({participantId: participant.$id})">{{participant.name}}</a>
       </h3>
     </div>
   </md-toolbar>
@@ -26,7 +26,7 @@ const template = `
     </div>
   </md-card-content>
   <div class="md-actions" layout="row" layout-align="end">
-    <md-button ui-sref="app.project.detail.participant.detail({projectId: participantList.project.$id, participantId: participant.$id})">Open</md-button>
+    <md-button ui-sref="app.projects.detail.participant({participantId: participant.$id})">Open</md-button>
   </div>
 </md-card>
 `;
@@ -52,8 +52,7 @@ angular.module(modName).directive('participantList', (ParticipantListDirectiveCo
     scope: {
     },
     bindToController: {
-      participants: '=',
-      project: '='
+      participants: '='
     },
     controllerAs: 'participantList',
     controller: ParticipantListDirectiveController

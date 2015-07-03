@@ -13,7 +13,7 @@ const template = `
   <md-toolbar>
     <div class="md-toolbar-tools">
       <h3 class="md-title">
-        <a ui-sref="app.project.detail({projectId: project.$id})">{{project.name}}</a>
+        <a ui-sref="app.projects.detail({projectId: project.$id})">{{project.name}}</a>
       </h3>
     </div>
   </md-toolbar>
@@ -26,7 +26,7 @@ const template = `
     </div>
   </md-card-content>
   <div class="md-actions" layout="row" layout-align="end">
-    <md-button class="md-primary" ui-sref="app.project.detail({projectId: project.$id})">
+    <md-button class="md-primary" ui-sref="app.projects.detail({projectId: project.$id})">
       Open
     </md-button>
   </div>

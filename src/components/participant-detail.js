@@ -6,13 +6,13 @@ import rootRefModule from '../services/root-ref';
 const modName = 'egrid.components.participant-detail';
 
 const template = `
-<md-button class="md-icon-button" ui-sref="app.project.detail({projectId: participantDetail.project.$id})">
+<md-button class="md-icon-button" ui-sref="app.projects.detail">
   <md-icon>arrow_back</md-icon>
 </md-button>
 
 <h2>{{participantDetail.participant.name}}</h2>
 
-<md-button ui-sref="app.project.detail.participant.detail.interview({projectId: participantDetail.project.$id, participantId: participantDetail.participant.$id})">
+<md-button ui-sref="app.projects.detail.participant.interview">
   Interview
 </md-button>
 `;
@@ -33,8 +33,8 @@ angular.module(modName).factory('ParticipantDetailController', (Firebase, openPa
 });
 
 angular.module(modName).config(($stateProvider) => {
-  $stateProvider.state('app.project.detail.participant.detail', {
-    url: '/{participantId}',
+  $stateProvider.state('app.projects.detail.participant', {
+    url: '/participants/{participantId}',
     views: {
       'content@app': {
         controllerAs: 'participantDetail',

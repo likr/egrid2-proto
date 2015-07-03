@@ -12,17 +12,6 @@ angular.module(modName).config(($urlRouterProvider) => {
   $urlRouterProvider.otherwise('/app/home');
 });
 
-angular.module(modName).config(($translateProvider) => {
-  $translateProvider
-    .useSanitizeValueStrategy('escape')
-    .useStaticFilesLoader({
-      prefix: 'locations/',
-      suffix: '.json'
-    })
-    .fallbackLanguage("en")
-    .preferredLanguage("ja");
-});
-
 angular.module(modName).run(($rootScope, $state) => {
   $rootScope.$on('$stateChangeError', (event, toState, toParams, fromState, fromParams, error) => {
     if (error === 'AUTH_REQUIRED') {

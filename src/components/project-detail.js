@@ -6,10 +6,8 @@ import firebaseModule from '../services/firebase';
 import openParticipantFormDialogModule from '../services/open-participant-form-dialog';
 import rootRefModule from '../services/root-ref';
 
-const modName = 'egrid.components.project-detail';
-
 const template = `
-<md-button class="md-icon-button" ui-sref="app.project.list">
+<md-button class="md-icon-button" ui-sref="app.projects">
   <md-icon>arrow_back</md-icon>
 </md-button>
 
@@ -23,6 +21,8 @@ const template = `
 
 <participant-list project="projectDetail.project" participants="projectDetail.participants"></participant-list>
 `;
+
+const modName = 'egrid.components.project-detail';
 
 angular.module(modName, [
   angularfireModule,
@@ -55,7 +55,7 @@ angular.module(modName).factory('ProjectDetailController', (Firebase, openPartic
 });
 
 angular.module(modName).config(($stateProvider) => {
-  $stateProvider.state('app.project.detail', {
+  $stateProvider.state('app.projects.detail', {
     url: '/{projectId}',
     views: {
       'content@app': {
@@ -68,6 +68,7 @@ angular.module(modName).config(($stateProvider) => {
       project: ($stateParams, $firebaseObject, rootRef) => {
         const ref = rootRef
           .child('projects')
+          .child($stateParams.userId)
           .child($stateParams.projectId);
         return $firebaseObject(ref).$loaded((data) => data);
       },

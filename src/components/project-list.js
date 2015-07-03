@@ -52,8 +52,8 @@ angular.module(modName).factory('ProjectListController', (Firebase, openProjectF
 });
 
 angular.module(modName).config(($stateProvider) => {
-  $stateProvider.state('app.project.list', {
-    url: '/list',
+  $stateProvider.state('app.projects', {
+    url: '/projects/{userId}',
     views: {
       'content@app': {
         controllerAs: 'projectList',
@@ -62,9 +62,17 @@ angular.module(modName).config(($stateProvider) => {
       }
     },
     resolve: {
-      projects: ($firebaseArray, rootRef) => {
-        return $firebaseArray(rootRef.child('projects'))
-          .$loaded((data) => data);
+      user: ($stateParams, $firebaseObject, rootRef) => {
+        const ref = rootRef
+          .child('users')
+          .child($stateParams.userId);
+        return $firebaseObject(ref).$loaded((data) => data);
+      },
+      projects: ($stateParams, $firebaseArray, rootRef) => {
+        const ref = rootRef
+          .child('projects')
+          .child($stateParams.userId);
+        return $firebaseArray(ref).$loaded((data) => data);
       }
     }
   });

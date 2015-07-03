@@ -5,13 +5,12 @@
   "main": "index.js",
   "dependencies": {
     "angular": "^1.4.0",
-    "angular-mm-foundation": "^0.7.0-SNAPSHOT",
+    "angular-messages": "^1.4.1",
     "angular-translate": "^2.7.2",
     "angular-translate-loader-static-files": "^2.7.2",
     "angularfire": "^1.1.2",
     "babel-runtime": "^5.6.15",
     "eg-graph": "^0.0.11",
-    "foundation-apps": "^1.1.0",
     "shinsekai": "^0.0.4"
   },
   "devDependencies": {
@@ -22,6 +21,6 @@
     "watch": "watchify src/index.js -o app/egrid.js -t [ babelify --optional runtime ] -v",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
-  "license": "ISC"
+  "author": "Yosuke Onoue <onoue@likr-lab.com>",
+  "license": "MIT"
 }

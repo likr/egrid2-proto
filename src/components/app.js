@@ -1,6 +1,5 @@
 import angular from 'angular';
-import materialModule from 'angular-material';
-import uiRouterModule from 'angular-ui-router';
+import commonModules from '../common-modules';
 import authModule from '../services/auth';
 
 const modName = 'egrid.components.app';
@@ -20,7 +19,7 @@ const template = `
       </md-button>
       <md-menu-content>
         <md-menu-item>
-          <p>{{app.loginUser.password.email}}</p>
+          <p>{{app.loginUser.email}}</p>
         </md-menu-item>
         <md-menu-item>
           <md-button ng-click="app.logout()">Logout</md-button>
@@ -35,22 +34,19 @@ const template = `
 `;
 
 angular.module(modName, [
-  uiRouterModule,
-  materialModule,
+  commonModules,
   authModule
 ]);
 
 angular.module(modName).factory('AppController', ($state, Auth) => {
   return class AppController {
-    constructor() {
-      Auth.$onAuth((authData) => {
-        this.loginUser = authData;
-      });
+    constructor(loginUser) {
+      this.loginUser = loginUser;
     }
 
     logout() {
       Auth.$unauth();
-      $state.go('app.login');
+      $state.go('app.login', null, {reload: true});
     }
   };
 });
@@ -67,8 +63,18 @@ angular.module(modName).config(($stateProvider) => {
       }
     },
     resolve: {
-      auth: (Auth) => {
-        return Auth.$waitForAuth();
+      loginUser: ($firebaseArray, Auth, rootRef) => {
+        return Auth.$waitForAuth()
+          .then((user) => {
+            if (user === null) {
+              return null;
+            }
+            const ref = rootRef
+              .child('users')
+              .orderByChild('email')
+              .equalTo(user.password.email);
+            return $firebaseArray(ref).$loaded((data) => data[0]);
+          });
       }
     }
   });

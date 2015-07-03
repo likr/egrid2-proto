@@ -25,7 +25,7 @@ angular.module(modName).factory('ParticipantInterviewController', (Firebase, ope
 });
 
 angular.module(modName).config(($stateProvider) => {
-  $stateProvider.state('app.project.detail.participant.detail.interview', {
+  $stateProvider.state('app.projects.detail.participant.interview', {
     url: '/interview',
     views: {
       'content@app': {
