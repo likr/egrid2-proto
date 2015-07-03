@@ -1,0 +1,129 @@
+{
+  "ACTION": {
+    "ACTION": "Action",
+    "APPEND": "Append",
+    "CANCEL": "Cancel",
+    "CLOSE": "Close",
+    "CONFIRM": "Confirm",
+    "DETAIL": "Detail",
+    "DUPLICATE": "Duplicate",
+    "EDIT": "Edit",
+    "EXPORT": "Export",
+    "FILTER": "Filter",
+    "IMPORT": "Import",
+    "LIST": "List",
+    "MERGE": "Merge",
+    "MESSAGE": "Message",
+    "NEW": "New",
+    "NEXT":"Next",
+    "OK": "OK",
+    "PAINT": "Paint",
+    "PREVIOUS": "Previous",
+    "QUIT": "Quit",
+    "REDO": "Redo",
+    "REMOVE": "Remove",
+    "RESET": "Reset",
+    "SAVE": "Save",
+    "SEARCH": "Search",
+    "SELECT": "Select",
+    "SELECT_FILE": "Select File",
+    "SHOW": "Show",
+    "SUBMIT": "Submit",
+    "UNDO": "Undo",
+    "UPDATE": "Update"
+  },
+  "COLLABORATOR": {
+    "ATTRIBUTES": {
+      "IS_OWNER": "Manager",
+      "PLACEHOLDERS": {
+        "USER": "test@example.com"
+      },
+      "USER": "User Name"
+    },
+    "COLLABORATOR": "Collaborator",
+    "ROLE": {
+      "MANAGER": "Manager",
+      "ROLE": "Role"
+    }
+  },
+  "EGM": {
+    "APP": {
+      "IMPORTANCE": {
+        "CENTRALITY": "Centrality",
+        "IMPORTANCE": "Importance measure",
+        "PARTICIPANTS": "Number of respondents"
+      },
+      "INACTIVE_NODE": {
+        "HIDDEN": "Hidden",
+        "INACTIVE_NODE": "Inactive Node",
+        "TRANSPARENT": "Transparent"
+      },
+      "INPUT_EVALUATION_FACTOR": "Input Evaluation Factor",
+      "LAYOUT_SETTINGS": "Layout Settings",
+      "MAXIMUM_TEXT_LENGTH": "Maximum text length",
+      "MINIMUM_WEIGHT": "Coarse-graining threshold",
+      "RANK_DIRECTION": {
+        "LR": "Left to right",
+        "RANK_DIRECTION": "Direction",
+        "TB": "Top to bottom"
+      },
+      "SCALING": {
+        "CONNECTION": "Number of connection",
+        "MIN": "Minimum scaling",
+        "MAX": "Maximum scaling",
+        "SCALING": "Scaling"
+      },
+      "VIEWS": {
+        "EDGE": "Edge View",
+        "NORMAL": "Normal View",
+        "VIEWS": "Views"
+      }
+    },
+    "EVALUATION_STRUCTURE": "Evaluation Structure",
+    "LADDER_DOWN": "Ladder Down",
+    "LADDER_UP": "Ladder Up",
+    "OVERALL_EVALUATION_STRUCTURE": "Overall Evaluation Structure"
+  },
+  "MESSAGES": {
+    "CONFIRM_DUPLICATE": "複製しますか",
+    "CONFIRM_REMOVE": "削除しますか",
+    "DESTINATION_IS_NOT_REACHABLE": "失敗しました。オンラインになったとき再度送信します",
+    "DUPLICATED": "複製しました",
+    "NOT_AUTHENTICATED": "認証しなければ続行できません",
+    "ITEM_NOT_FOUND": "アイテムが存在しません",
+    "REMOVED": "削除しました",
+    "SAVED": "保存しました",
+    "UPDATED": "保存しました",
+    "WARN_REPLACE": "現在のデータは上書きされます"
+  },
+  "PARTICIPANT": {
+    "PARTICIPANTS": "Participants",
+    "FILTER": "Filter Participants",
+    "NEW": "New Participant",
+    "ATTRIBUTES": {
+      "NAME": "Name",
+      "NOTE": "Note",
+      "CREATED_AT": "Craeted",
+      "UPDATED_AT": "Updated",
+      "PLACEHOLDERS": {
+        "NAME": "Participant Name",
+        "NOTE": "Note"
+      }
+    }
+  },
+  "PROJECT": {
+    "PROJECTS": "Projects",
+    "LIST": "Projects",
+    "NEW": "New Project",
+    "ATTRIBUTES": {
+      "NAME": "Name",
+      "NOTE": "Note",
+      "CREATED_AT": "Craeted",
+      "UPDATED_AT": "Updated",
+      "PLACEHOLDERS": {
+        "NAME": "Project Name",
+        "NOTE": "Note"
+      }
+    }
+  }
+}
