@@ -85,18 +85,22 @@ const template = `
     <g ng-attr-transform="{{participantInterview.svgTranslate}}">
       <g>
         <g
-            ng-repeat="edge in participantInterview.layout.edges">
+            ng-repeat="edge in participantInterview.layout.edges track by edge.u + ':' + edge.v">
           <path
               fill="none"
               stroke="#ccc"
-              ss-d="edge.path"/>
+              ss-d="edge.path"
+              ss-d-enter="'M0 0 L0 0 q0 0,0 0 q0 0,0 0 L0 0'"
+              ss-dur="0.5"/>
         </g>
       </g>
       <g>
         <g
             class="vertex"
             ss-transform="participantInterview.translate(vertex.x, vertex.y)"
-            ng-repeat="vertex in participantInterview.layout.vertices">
+            ss-transform-enter="'translate(0,0)'"
+            ss-dur="0.5"
+            ng-repeat="vertex in participantInterview.layout.vertices track by vertex.u">
           <circle
               r="5"/>
           <text
