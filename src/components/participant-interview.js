@@ -104,10 +104,16 @@ const template = `
               y="5">
             {{vertex.text}}
           </text>
-          <foreignObject width="130" height="60" x="-65">
+          <foreignObject width="260" height="60" x="-130" transform="scale(0.7)">
             <div>
               <md-button class="md-icon-button" ng-click="participantInterview.ladderUp($event, vertex.u)">
                 <md-icon>arrow_back</md-icon>
+              </md-button>
+              <md-button class="md-icon-button" ng-click="participantInterview.editText($event, vertex.u)">
+                <md-icon>edit</md-icon>
+              </md-button>
+              <md-button class="md-icon-button" ng-click="participantInterview.removeConstruct($event, vertex.u)">
+                <md-icon>delete</md-icon>
               </md-button>
               <md-button class="md-icon-button" ng-click="participantInterview.ladderDown($event, vertex.u)">
                 <md-icon>arrow_forward</md-icon>
@@ -209,6 +215,27 @@ angular.module(modName).factory('ParticipantInterviewController', ($firebaseObje
           constructs.$value = graph.graph().toString();
           constructs.$save();
         });
+    }
+
+    editText($event, u) {
+      openConstructFormDialog($event)
+        .then(({text}) => {
+          const constructs = privates.get(this).constructs,
+                graph = grid();
+          load(graph.graph(), JSON.parse(constructs.$value || initialValue));
+          graph.updateConstruct(u, 'text', text);
+          constructs.$value = graph.graph().toString();
+          constructs.$save();
+        });
+    }
+
+    removeConstruct($event, u) {
+      const constructs = privates.get(this).constructs,
+            graph = grid();
+      load(graph.graph(), JSON.parse(constructs.$value || initialValue));
+      graph.removeConstruct(u);
+      constructs.$value = graph.graph().toString();
+      constructs.$save();
     }
 
     onMouseDown($event) {
