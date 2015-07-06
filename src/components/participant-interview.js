@@ -32,15 +32,19 @@ const svgPath = (points, ltor) => {
   return d;
 };
 
-const layout = (constructs) => {
-  const graph = new Graph(),
-        layouter = new SugiyamaLayouter();
+const load = (graph, constructs) => {
   for (const {u, d} of constructs.vertices) {
     graph.addVertex(u, d);
   }
   for (const {u, v, d} of constructs.edges) {
     graph.addEdge(u, v, d);
   }
+};
+
+const layout = (constructs) => {
+  const graph = new Graph(),
+        layouter = new SugiyamaLayouter();
+  load(graph, constructs);
   layouter
     .layerMargin(200)
     .vertexMargin(50)
@@ -67,7 +71,6 @@ const layout = (constructs) => {
       path: svgPath(d.points, true)
     };
   });
-  console.log(edges);
   return {vertices, edges};
 };
 
@@ -91,8 +94,9 @@ const template = `
       </g>
       <g>
         <g
+            class="vertex"
             ss-transform="participantInterview.translate(vertex.x, vertex.y)"
-            ng-repeat="vertex in participantInterview.layout.vertices">
+            ng-repeat="vertex in participantInterview.layout.vertices track by vertex.u">
           <circle
               r="5"/>
           <text
@@ -174,7 +178,9 @@ angular.module(modName).factory('ParticipantInterviewController', ($firebaseObje
     addConstruct($event) {
       openConstructFormDialog($event)
         .then(({text}) => {
-          const {graph, constructs} = privates.get(this);
+          const constructs = privates.get(this).constructs,
+                graph = grid();
+          load(graph.graph(), JSON.parse(constructs.$value || initialValue));
           graph.addConstruct(text);
           constructs.$value = graph.graph().toString();
           constructs.$save();
@@ -184,7 +190,9 @@ angular.module(modName).factory('ParticipantInterviewController', ($firebaseObje
     ladderDown($event, fromConstruct) {
       openConstructFormDialog($event)
         .then(({text}) => {
-          const {graph, constructs} = privates.get(this);
+          const constructs = privates.get(this).constructs,
+                graph = grid();
+          load(graph.graph(), JSON.parse(constructs.$value || initialValue));
           graph.ladderDown(fromConstruct, text);
           constructs.$value = graph.graph().toString();
           constructs.$save();
@@ -194,7 +202,9 @@ angular.module(modName).factory('ParticipantInterviewController', ($firebaseObje
     ladderUp($event, fromConstruct) {
       openConstructFormDialog($event)
         .then(({text}) => {
-          const {graph, constructs} = privates.get(this);
+          const constructs = privates.get(this).constructs,
+                graph = grid();
+          load(graph.graph(), JSON.parse(constructs.$value || initialValue));
           graph.ladderUp(fromConstruct, text);
           constructs.$value = graph.graph().toString();
           constructs.$save();
