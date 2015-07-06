@@ -11,6 +11,7 @@
     "angularfire": "^1.1.2",
     "babel-runtime": "^5.6.15",
     "eg-graph": "^0.0.11",
+    "egrid-core": "file:../egrid-core",
     "shinsekai": "^0.0.4"
   },
   "devDependencies": {
