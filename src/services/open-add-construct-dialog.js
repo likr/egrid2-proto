@@ -28,8 +28,7 @@ angular.module(modName).factory('ConstructFormController', () => {
     constructor($mdDialog) {
       dialog = $mdDialog;
       this.form = {
-        name: '',
-        note: ''
+        text: this.text
       };
     }
 
@@ -44,14 +43,21 @@ angular.module(modName).factory('ConstructFormController', () => {
 });
 
 angular.module(modName).factory('openConstructFormDialog', ($mdDialog, ConstructFormController) => {
-  const openConstructFormDialog = ($event) => {
+  const openConstructFormDialog = ($event, text='') => {
     return $mdDialog
       .show({
         targetEvent: $event,
+        locals: {
+          text
+        },
+        bindToController: true,
         controllerAs: 'constructForm',
         controller: ConstructFormController,
         template: template,
-        clickOutsideToClose: true
+        clickOutsideToClose: true,
+        onComplete: (_, element) => {
+          element[0].getElementsByTagName('input')[0].focus();
+        }
       });
   };
   return openConstructFormDialog;

@@ -96,7 +96,7 @@ const template = `
         <g
             class="vertex"
             ss-transform="participantInterview.translate(vertex.x, vertex.y)"
-            ng-repeat="vertex in participantInterview.layout.vertices track by vertex.u">
+            ng-repeat="vertex in participantInterview.layout.vertices">
           <circle
               r="5"/>
           <text
@@ -104,7 +104,7 @@ const template = `
               y="5">
             {{vertex.text}}
           </text>
-          <foreignObject width="260" height="60" x="-130" transform="scale(0.7)">
+          <foreignObject width="260" height="60" x="-130" transform="scale(0.5)">
             <div>
               <md-button class="md-icon-button" ng-click="participantInterview.ladderUp($event, vertex.u)">
                 <md-icon>arrow_back</md-icon>
@@ -218,11 +218,11 @@ angular.module(modName).factory('ParticipantInterviewController', ($firebaseObje
     }
 
     editText($event, u) {
-      openConstructFormDialog($event)
+      const constructs = privates.get(this).constructs,
+            graph = grid();
+      load(graph.graph(), JSON.parse(constructs.$value || initialValue));
+      openConstructFormDialog($event, graph.graph().vertex(u).text)
         .then(({text}) => {
-          const constructs = privates.get(this).constructs,
-                graph = grid();
-          load(graph.graph(), JSON.parse(constructs.$value || initialValue));
           graph.updateConstruct(u, 'text', text);
           constructs.$value = graph.graph().toString();
           constructs.$save();
