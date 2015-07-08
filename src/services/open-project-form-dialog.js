@@ -55,7 +55,10 @@ angular.module(modName).factory('openProjectFormDialog', ($mdDialog, ProjectForm
         controllerAs: 'projectForm',
         controller: ProjectFormController,
         template: template,
-        clickOutsideToClose: true
+        clickOutsideToClose: true,
+        onComplete: (_, element) => {
+          element[0].getElementsByTagName('input')[0].focus();
+        }
       });
   };
   return openProjectFormDialog;

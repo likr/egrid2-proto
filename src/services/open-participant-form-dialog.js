@@ -55,7 +55,10 @@ angular.module(modName).factory('openParticipantFormDialog', ($mdDialog, Partici
         controllerAs: 'participantForm',
         controller: ParticipantFormController,
         template: template,
-        clickOutsideToClose: true
+        clickOutsideToClose: true,
+        onComplete: (_, element) => {
+          element[0].getElementsByTagName('input')[0].focus();
+        }
       });
   };
   return openParticipantFormDialog;
