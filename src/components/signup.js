@@ -17,6 +17,7 @@ const template = `
     <input type="text" ng-model="signup.form.userId" required/>
     <div ng-messages="signup.errors.userId">
       <div ng-message="unique">Already used.</div>
+      <div ng-message="pattern">Contains invalid characters.</div>
     </div>
   </md-input-container>
   <md-input-container>
@@ -60,6 +61,16 @@ angular.module(modName).factory('SignupController', ($q, $state, $firebaseArray,
     });
   };
 
+  const userIdValid = (userId) => {
+    const deferred = $q.defer();
+    if (userId.match(/^[a-zA-Z0-9]+$/)) {
+      deferred.resolve(true);
+    } else {
+      deferred.reject(false);
+    }
+    return deferred.promise;
+  };
+
   const userIdUnique = (userId) => {
     const ref = rootRef
       .child('users')
@@ -92,19 +103,25 @@ angular.module(modName).factory('SignupController', ($q, $state, $firebaseArray,
         .then((data) => {
           this.errors.email.unique = false;
           return data;
-        })
-        .catch((error) => {
+        }, (error) => {
           this.errors.email.unique = true;
           return $q.reject(error);
         });
-      const userIdChecked = userIdUnique(userId)
-        .then((data) => {
+      const userIdChecked = userIdValid(userId)
+        .then(() => {
+          this.errors.userId.pattern = false;
+          return userIdUnique(userId)
+            .then((data) => {
+              this.errors.userId.unique = false;
+              return data;
+            }, (error) => {
+              this.errors.userId.unique = true;
+              return $q.reject(error);
+            });
+        }, () => {
+          this.errors.userId.pattern = true;
           this.errors.userId.unique = false;
-          return data;
-        })
-        .catch((error) => {
-          this.errors.userId.unique = true;
-          return $q.reject(error);
+          return $q.reject();
         });
 
       $q.all([emailChecked, userIdChecked])
@@ -121,8 +138,7 @@ angular.module(modName).factory('SignupController', ($q, $state, $firebaseArray,
         })
         .then(() => {
           $state.go('app.home', null, {reload: true});
-        })
-        .catch((error) => {
+        }, (error) => {
           console.log(error);
         });
     }
