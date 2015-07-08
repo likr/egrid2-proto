@@ -141,13 +141,19 @@ const template = `
             ss-dur="participantInterview.duration"
             ng-repeat="vertex in participantInterview.layout.vertices track by vertex.u">
           <circle
-              r="5"/>
+              style="cursor: pointer;"
+              r="5"
+              ss-fill="participantInterview.selected[vertex.u] ? participantInterview.selectedColor : '#000'"
+              ng-click="participantInterview.toggleSelected(vertex.u)"/>
           <text
+              style="cursor: pointer;"
               x="7"
-              y="5">
+              y="5"
+              ss-fill="participantInterview.selected[vertex.u] ? participantInterview.selectedColor : '#000'"
+              ng-click="participantInterview.toggleSelected(vertex.u)">
             {{vertex.text}}
           </text>
-          <foreignObject width="260" height="60" x="-130" transform="scale(0.5)">
+          <foreignObject width="260" height="60" x="-130" transform="translate(0,10)scale(0.5)">
             <div>
               <md-button class="md-icon-button" ng-click="participantInterview.ladderUp($event, vertex.u)">
                 <md-icon>arrow_back</md-icon>
@@ -216,9 +222,10 @@ angular.module(modName).factory('ParticipantInterviewController', ($firebaseObje
         svgY0: y0
       });
       this.delay = 0.2;
-      this.duration = 0.4;
+      this.selectedColor = '#dc143c';
       this.svgTranslate = this.translate(x0, y0);
       this.participant = participant;
+      this.selected = {};
 
       constructs.$loaded(() => {
         this.layout = layout(JSON.parse(constructs.$value || initialValue), this.layout);
@@ -304,6 +311,10 @@ angular.module(modName).factory('ParticipantInterviewController', ($firebaseObje
 
     translate(x, y) {
       return `translate(${x},${y})`;
+    }
+
+    toggleSelected(u) {
+      this.selected[u] = !this.selected[u];
     }
   };
 });
