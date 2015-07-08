@@ -155,7 +155,7 @@ const template = `
   </svg>
 </div>
 <div style="position: absolute; left: 0; top: 64px;" layout="column">
-  <md-button class="md-fab" ui-sref="app.projects.detail.participant">
+  <md-button class="md-fab" ui-sref="app.projects.detail">
     <md-icon>arrow_back</md-icon>
   </md-button>
 </div>
@@ -306,7 +306,8 @@ angular.module(modName).config(($stateProvider) => {
       constructs: ($stateParams, $firebaseObject, rootRef) => {
         const ref = rootRef
           .child('graph')
-          .child($stateParams.projectId);
+          .child($stateParams.projectId)
+          .child($stateParams.participantId);
         return $firebaseObject(ref).$loaded((data) => data);
       }
     }
