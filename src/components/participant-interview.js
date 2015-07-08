@@ -191,17 +191,19 @@ angular.module(modName).factory('ParticipantInterviewController', ($firebaseObje
         graph.graph().addEdge(u, v, d);
       }
 
+      const x0 = 100,
+            y0 = 100;
       privates.set(this, {
         graph: graph,
         constructs: constructs,
-        svgX: 0,
-        svgY: 0,
-        svgX0: 0,
-        svgY0: 0
+        svgX: x0,
+        svgY: y0,
+        svgX0: x0,
+        svgY0: y0
       });
       this.delay = 0.2;
       this.duration = 0.4;
-      this.svgTranslate = this.translate(0, 0);
+      this.svgTranslate = this.translate(x0, y0);
       this.participant = participant;
 
       constructs.$loaded(() => {
