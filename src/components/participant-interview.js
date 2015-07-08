@@ -251,11 +251,12 @@ angular.module(modName).factory('ParticipantInterviewController', ($firebaseObje
     }
 
     addConstruct($event) {
-      openConstructFormDialog($event)
+      const constructs = privates.get(this).constructs,
+            graph = grid();
+      load(graph.graph(), JSON.parse(constructs.$value || initialValue));
+      const words = graph.graph().vertices().map((u) => graph.graph().vertex(u).text);
+      openConstructFormDialog($event, '', words)
         .then(({text}) => {
-          const constructs = privates.get(this).constructs,
-                graph = grid();
-          load(graph.graph(), JSON.parse(constructs.$value || initialValue));
           graph.addConstruct(text);
           constructs.$value = graph.graph().toString();
           constructs.$save();
@@ -263,11 +264,12 @@ angular.module(modName).factory('ParticipantInterviewController', ($firebaseObje
     }
 
     ladderDown($event, fromConstruct) {
-      openConstructFormDialog($event)
+      const constructs = privates.get(this).constructs,
+            graph = grid();
+      load(graph.graph(), JSON.parse(constructs.$value || initialValue));
+      const words = graph.graph().vertices().map((u) => graph.graph().vertex(u).text);
+      openConstructFormDialog($event, '', words)
         .then(({text}) => {
-          const constructs = privates.get(this).constructs,
-                graph = grid();
-          load(graph.graph(), JSON.parse(constructs.$value || initialValue));
           graph.ladderDown(fromConstruct, text);
           constructs.$value = graph.graph().toString();
           constructs.$save();
@@ -275,11 +277,12 @@ angular.module(modName).factory('ParticipantInterviewController', ($firebaseObje
     }
 
     ladderUp($event, fromConstruct) {
-      openConstructFormDialog($event)
+      const constructs = privates.get(this).constructs,
+            graph = grid();
+      load(graph.graph(), JSON.parse(constructs.$value || initialValue));
+      const words = graph.graph().vertices().map((u) => graph.graph().vertex(u).text);
+      openConstructFormDialog($event, '', words)
         .then(({text}) => {
-          const constructs = privates.get(this).constructs,
-                graph = grid();
-          load(graph.graph(), JSON.parse(constructs.$value || initialValue));
           graph.ladderUp(fromConstruct, text);
           constructs.$value = graph.graph().toString();
           constructs.$save();
@@ -290,7 +293,8 @@ angular.module(modName).factory('ParticipantInterviewController', ($firebaseObje
       const constructs = privates.get(this).constructs,
             graph = grid();
       load(graph.graph(), JSON.parse(constructs.$value || initialValue));
-      openConstructFormDialog($event, graph.graph().vertex(u).text)
+      const words = graph.graph().vertices().map((v) => graph.graph().vertex(v).text);
+      openConstructFormDialog($event, graph.graph().vertex(u).text, words)
         .then(({text}) => {
           graph.updateConstruct(u, 'text', text);
           constructs.$value = graph.graph().toString();

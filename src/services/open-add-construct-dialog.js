@@ -6,10 +6,17 @@ const template = `
   <md-dialog-content>
     <form ng-submit="constructForm.submit()">
       <md-input-container>
-        <label>{{'PROJECT.ATTRIBUTES.NAME' | translate}}</label>
+        <label>Construct</label>
         <input type="text" ng-model="constructForm.form.text"/>
       </md-input-container>
     </form>
+    <md-list style="height: 500px; overflow-y: scroll">
+      <md-list-item
+          ng-repeat="construct in constructForm.constructs | filter:constructForm.form.text"
+          ng-click="constructForm.form.text = construct; constructForm.submit()">
+        {{construct}}
+      </md-list-item>
+    </md-list>
   </md-dialog-content>
   <div class="md-actions">
     <md-button ng-click="constructForm.cancel()">Cancel</md-button>
@@ -43,12 +50,13 @@ angular.module(modName).factory('ConstructFormController', () => {
 });
 
 angular.module(modName).factory('openConstructFormDialog', ($mdDialog, ConstructFormController) => {
-  const openConstructFormDialog = ($event, text='') => {
+  const openConstructFormDialog = ($event, text='', constructs=null) => {
     return $mdDialog
       .show({
         targetEvent: $event,
         locals: {
-          text
+          text,
+          constructs
         },
         bindToController: true,
         controllerAs: 'constructForm',
