@@ -41,7 +41,7 @@ const load = (graph, constructs) => {
   }
 };
 
-const layout = (constructs) => {
+const layout = (constructs, oldLayout) => {
   const graph = new Graph(),
         layouter = new SugiyamaLayouter();
   load(graph, constructs);
@@ -64,14 +64,39 @@ const layout = (constructs) => {
     };
   });
   const edges = graph.edges().map(([u, v]) => {
-    const d = positions.edges[u][v];
+    const points = positions.edges[u][v].points;
+    let oldPoints;
+    if (oldLayout) {
+      if (oldLayout.positions.edges[u] && oldLayout.positions.edges[u][v]) {
+        oldPoints = Array.from(oldLayout.positions.edges[u][v].points);
+        if (points.length > oldPoints.length) {
+          while (points.length > oldPoints.length) {
+            oldPoints.push(oldPoints[oldPoints.length - 1]);
+          }
+        }
+      } else {
+        const x1 = oldLayout.positions.vertices[u] ? oldLayout.positions.vertices[u].x : 0,
+              y1 = oldLayout.positions.vertices[u] ? oldLayout.positions.vertices[u].y : 0,
+              x2 = oldLayout.positions.vertices[v] ? oldLayout.positions.vertices[v].x : 0,
+              y2 = oldLayout.positions.vertices[v] ? oldLayout.positions.vertices[v].y : 0;
+        oldPoints = [
+          [x1, y1],
+          [x1, y1],
+          [x2, y2],
+          [x2, y2]
+        ];
+      }
+    } else {
+      oldPoints = points.map(() => [0, 0]);
+    }
     return {
       u: u,
       v: v,
-      path: svgPath(d.points, true)
+      pathBefore: svgPath(oldPoints, true),
+      path: svgPath(points, true)
     };
   });
-  return {vertices, edges};
+  return {vertices, edges, positions};
 };
 
 const template = `
@@ -90,8 +115,8 @@ const template = `
               fill="none"
               stroke="#ccc"
               ss-d="edge.path"
-              ss-d-enter="'M0 0 L0 0 q0 0,0 0 q0 0,0 0 L0 0'"
-              ss-dur="0.5"/>
+              ss-d-update="edge.pathBefore"
+              ss-dur="participantInterview.duration"/>
         </g>
       </g>
       <g>
@@ -99,7 +124,7 @@ const template = `
             class="vertex"
             ss-transform="participantInterview.translate(vertex.x, vertex.y)"
             ss-transform-enter="'translate(0,0)'"
-            ss-dur="0.5"
+            ss-dur="participantInterview.duration"
             ng-repeat="vertex in participantInterview.layout.vertices track by vertex.u">
           <circle
               r="5"/>
@@ -174,14 +199,16 @@ angular.module(modName).factory('ParticipantInterviewController', ($firebaseObje
         svgX0: 0,
         svgY0: 0
       });
+      this.delay = 0.2;
+      this.duration = 0.4;
       this.svgTranslate = this.translate(0, 0);
       this.participant = participant;
 
       constructs.$loaded(() => {
-        this.layout = layout(JSON.parse(constructs.$value || initialValue));
+        this.layout = layout(JSON.parse(constructs.$value || initialValue), this.layout);
       });
       constructs.$watch((event) => {
-        this.layout = layout(JSON.parse(constructs.$value || initialValue));
+        this.layout = layout(JSON.parse(constructs.$value || initialValue), this.layout);
       });
     }
 
