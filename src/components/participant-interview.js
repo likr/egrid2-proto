@@ -47,7 +47,7 @@ const layout = (constructs, oldLayout) => {
   load(graph, constructs);
   layouter
     .layerMargin(200)
-    .vertexMargin(50)
+    .vertexMargin(80)
     .vertexWidth(() => 10)
     .vertexHeight(() => 10)
     .edgeWidth(() => 1);
@@ -153,16 +153,13 @@ const template = `
               ng-click="participantInterview.toggleSelected(vertex.u)">
             {{vertex.text}}
           </text>
-          <foreignObject width="260" height="60" x="-130" transform="translate(0,10)scale(0.5)">
+          <foreignObject width="195" height="60" x="-90" transform="translate(0,10)scale(0.75)">
             <div>
               <md-button class="md-icon-button" ng-click="participantInterview.ladderUp($event, vertex.u)">
                 <md-icon>arrow_back</md-icon>
               </md-button>
               <md-button class="md-icon-button" ng-click="participantInterview.editText($event, vertex.u)">
                 <md-icon>edit</md-icon>
-              </md-button>
-              <md-button class="md-icon-button" ng-click="participantInterview.removeConstruct($event, vertex.u)">
-                <md-icon>delete</md-icon>
               </md-button>
               <md-button class="md-icon-button" ng-click="participantInterview.ladderDown($event, vertex.u)">
                 <md-icon>arrow_forward</md-icon>
@@ -174,15 +171,32 @@ const template = `
     </g>
   </svg>
 </div>
-<div style="position: absolute; left: 0; top: 64px;" layout="column">
+<div style="position: absolute; left: 0; top: 64px;" layout="row">
   <md-button class="md-fab" ui-sref="app.projects.detail">
     <md-icon>arrow_back</md-icon>
   </md-button>
 </div>
-<div style="position: absolute; right: 0; top: 64px;" layout="column">
+<div style="position: absolute; right: 0; top: 64px;" layout="row">
   <md-button class="md-fab" ng-click="participantInterview.addConstruct($event)">
     <md-icon>add</md-icon>
   </md-button>
+</div>
+<div style="position: absolute; right: 0; bottom: 0;" layout="row">
+  <md-button class="md-fab" ng-click="participantInterview.removeSelectedConstruct($event)">
+    <md-icon>delete</md-icon>
+  </md-button>
+  <div ng-switch on="participantInterview.selectedCount">
+    <div ng-switch-when="0">
+      <md-button class="md-fab" ng-click="participantInterview.selectAll()">
+        <md-icon>check_box_outline_blank</md-icon>
+      </md-button>
+    </div>
+    <div ng-switch-default>
+      <md-button class="md-fab" ng-click="participantInterview.resetSelect()">
+        <md-icon>check_box</md-icon>
+      </md-button>
+    </div>
+  </div>
 </div>
 `;
 
@@ -221,10 +235,11 @@ angular.module(modName).factory('ParticipantInterviewController', ($firebaseObje
         svgX0: x0,
         svgY0: y0
       });
-      this.delay = 0.2;
+      this.duration = 0.4;
       this.selectedColor = '#dc143c';
       this.svgTranslate = this.translate(x0, y0);
       this.participant = participant;
+      this.selectedCount = 0;
       this.selected = {};
 
       constructs.$loaded(() => {
@@ -283,11 +298,17 @@ angular.module(modName).factory('ParticipantInterviewController', ($firebaseObje
         });
     }
 
-    removeConstruct($event, u) {
+    removeSelectedConstruct($event) {
       const constructs = privates.get(this).constructs,
             graph = grid();
       load(graph.graph(), JSON.parse(constructs.$value || initialValue));
-      graph.removeConstruct(u);
+      for (const u in this.selected) {
+        if (this.selected[u]) {
+          this.selectedCount -= 1;
+          delete this.selected[u];
+          graph.removeConstruct(u);
+        }
+      }
       constructs.$value = graph.graph().toString();
       constructs.$save();
     }
@@ -314,7 +335,28 @@ angular.module(modName).factory('ParticipantInterviewController', ($firebaseObje
     }
 
     toggleSelected(u) {
-      this.selected[u] = !this.selected[u];
+      if (this.selected[u]) {
+        this.selectedCount -= 1;
+        this.selected[u] = false;
+      } else {
+        this.selectedCount += 1;
+        this.selected[u] = true;
+      }
+    }
+
+    selectAll() {
+      const vertices = JSON.parse(privates.get(this).constructs.$value).vertices;
+      this.selectedCount = vertices.length;
+      for (const {u} of vertices) {
+        this.selected[u] = true;
+      }
+    }
+
+    resetSelect() {
+      this.selectedCount = 0;
+      for (const u in this.selected) {
+        this.selected[u] = false;
+      }
     }
   };
 });
