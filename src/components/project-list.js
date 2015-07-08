@@ -62,6 +62,9 @@ angular.module(modName).config(($stateProvider) => {
       }
     },
     resolve: {
+      auth: (Auth) => {
+        return Auth.$requireAuth();
+      },
       user: ($stateParams, $firebaseObject, rootRef) => {
         const ref = rootRef
           .child('users')
