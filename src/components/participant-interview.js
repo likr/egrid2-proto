@@ -64,7 +64,7 @@ const layout = (constructs, oldLayout) => {
     };
   });
   const edges = graph.edges().map(([u, v]) => {
-    const points = positions.edges[u][v].points;
+    const points = positions.edges[u][v] ? positions.edges[u][v].points : positions.edges[v][u].points;
     let oldPoints;
     if (oldLayout) {
       if (oldLayout.positions.edges[u] && oldLayout.positions.edges[u][v]) {
@@ -92,6 +92,7 @@ const layout = (constructs, oldLayout) => {
     return {
       u: u,
       v: v,
+      reverse: !positions.edges[u][v],
       pathBefore: svgPath(oldPoints, true),
       path: svgPath(points, true)
     };
@@ -107,6 +108,18 @@ const template = `
       ng-mousemove="participantInterview.onMouseMove($event)"
       ng-mousedown="participantInterview.onMouseDown($event)"
       style="cursor: move">
+    <marker
+        id="m_ar"
+        viewBox="0 0 10 10"
+        refX="10"
+        refY="5"
+        markerUnits="strokeWidth"
+        preserveAspectRatio="none"
+        markerWidth="8"
+        markerHeight="12"
+        orient="auto-start-reverse">
+      <polygon points="0,0 0,10 10,5" fill="#888"/>
+    </marker>
     <g ng-attr-transform="{{participantInterview.svgTranslate}}">
       <g>
         <g
@@ -114,6 +127,7 @@ const template = `
           <path
               fill="none"
               stroke="#ccc"
+              ng-attr-stroke-dasharray="{{edge.reverse ? '5' : 'none'}}"
               ss-d="edge.path"
               ss-d-update="edge.pathBefore"
               ss-dur="participantInterview.duration"/>
