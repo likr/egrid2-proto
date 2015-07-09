@@ -65,17 +65,16 @@ class NetworkDiagram extends React.Component {
     }
   }
 
-  onWheel({deltaY}) {
-    const zoomFactor = 0.95;
-    if (deltaY > 0) {
-      this.setState({
-        zoomScale: this.state.zoomScale / zoomFactor
-      });
-    } else {
-      this.setState({
-        zoomScale: this.state.zoomScale * zoomFactor
-      });
-    }
+  onWheel({clientX, clientY, deltaY, target}) {
+    const zoomFactor = 0.9,
+          scale = Math.max(0.1, Math.min(2, deltaY > 0
+            ? this.state.zoomScale / zoomFactor
+            : this.state.zoomScale * zoomFactor));
+    this.setState({
+      zoomX: clientX - scale / this.state.zoomScale * (clientX - this.state.zoomX),
+      zoomY: clientY - scale / this.state.zoomScale * (clientY - this.state.zoomY),
+      zoomScale: scale
+    });
   }
 
   render() {
