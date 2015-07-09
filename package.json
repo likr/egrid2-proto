@@ -1,0 +1,31 @@
+{
+  "name": "egrid2-proto",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/index.js",
+  "dependencies": {
+    "babel-runtime": "^5.6.15",
+    "eg-graph": "0.0.14",
+    "react": "^0.13.3",
+    "react-mixin": "^1.5.0",
+    "react.animate": "^1.0.0"
+  },
+  "devDependencies": {
+    "babelify": "^6.1.2",
+    "watchify": "^3.2.3"
+  },
+  "scripts": {
+    "watch": "watchify src/index.jsx -o app/bundle.js -t [ babelify --optional runtime ] -v --extension=.jsx",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://likr@github.com/likr/egrid2-proto.git"
+  },
+  "author": "Yosuke Onoue <onoue@likr-lab.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/likr/egrid2-proto/issues"
+  },
+  "homepage": "https://github.com/likr/egrid2-proto#readme"
+}
