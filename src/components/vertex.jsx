@@ -1,6 +1,4 @@
 import React from 'react';
-import mixin from 'react-mixin';
-import Animate from '../react-animate';
 import {ladderUp, ladderDown, openConstructDialog} from '../app-actions';
 
 class Vertex extends React.Component {
@@ -8,15 +6,19 @@ class Vertex extends React.Component {
     super(props);
 
     this.state = {
-      t: 0,
       x0: 0,
       y0: 0,
       selected: false
     };
   }
 
-  componentDidMount() {
-    this.animate({t: 1}, 500);
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.t === 1) {
+      this.setState({
+        x0: this.props.position.x,
+        y0: this.props.position.y
+      });
+    }
   }
 
   handleClick() {
@@ -26,21 +28,20 @@ class Vertex extends React.Component {
   }
 
   handleClickLadderUpButton() {
-    console.log('ladder up');
     openConstructDialog((text) => {
       ladderUp(this.props.u, text);
     });
   }
 
   handleClickLadderDownButton() {
-    console.log('ladder down');
     openConstructDialog((text) => {
       ladderDown(this.props.u, text);
     });
   }
 
   render() {
-    const {x0, y0, t} = this.state;
+    const {t} = this.props,
+          {x0, y0} = this.state;
     const x = (this.props.position.x - x0) * t + x0,
           y = (this.props.position.y - y0) * t + y0,
           color = this.state.selected ? 'red' : 'black';
@@ -78,7 +79,5 @@ class Vertex extends React.Component {
     );
   }
 }
-
-mixin(Vertex.prototype, Animate);
 
 export default Vertex;

@@ -1,6 +1,4 @@
 import React from 'react';
-import mixin from 'react-mixin';
-import Animate from '../react-animate';
 
 const startFrom = ([x, y]) => {
   return `M${x} ${y}`;
@@ -36,12 +34,16 @@ class Edge extends React.Component {
     };
   }
 
-  componentDidMount() {
-    this.animate({t: 1}, 500);
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.t === 1) {
+      this.setState({
+        points0: this.props.points
+      });
+    }
   }
 
   render() {
-    const t = this.state.t;
+    const t = this.props.t;
     const points = this.props.points.map((point, i) => {
       const [x, y] = point,
             [x0, y0] = i < this.state.points0.length ? this.state.points0[i] : point;
@@ -54,7 +56,5 @@ class Edge extends React.Component {
     );
   }
 }
-
-mixin(Edge.prototype, Animate);
 
 export default Edge;

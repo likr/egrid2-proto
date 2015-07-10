@@ -1,6 +1,8 @@
 import React from 'react';
+import mixin from 'react-mixin';
 import Graph from 'eg-graph/lib/graph';
 import Layouter from 'eg-graph/lib/layouter/sugiyama';
+import Animate from '../react-animate';
 import Vertex from './vertex';
 import Edge from './edge';
 
@@ -16,22 +18,28 @@ class NetworkDiagram extends React.Component {
     super(props);
 
     this.state = {
+      t: 0,
       x0: 0,
       y0: 0,
       draggin: false,
       zoomX: 50,
       zoomY: 50,
       zoomScale: 1,
-      graph: props.graph,
       positions: layouter.layout(props.graph)
     };
   }
 
   componentWillReceiveProps(props) {
     this.setState({
-      graph: props.graph,
+      t: 0,
       positions: layouter.layout(props.graph)
     });
+  }
+
+  componentDidUpdate(_, prevState) {
+    if (this.state.positions !== prevState.positions) {
+      this.animate({t: 1}, 1000);
+    }
   }
 
   dragStart(x, y) {
@@ -100,12 +108,13 @@ class NetworkDiagram extends React.Component {
   }
 
   render() {
-    const {graph, positions} = this.state;
+    const {graph} = this.props,
+          {t, positions} = this.state;
     const vertices = graph.vertices().map((u) => {
-      return <Vertex key={u} u={u} d={graph.vertex(u)} position={positions.vertices[u]}/>;
+      return <Vertex key={u} t={t} u={u} d={graph.vertex(u)} position={positions.vertices[u]}/>;
     });
     const edges = graph.edges().map(([u, v]) => {
-      return <Edge key={`${u}:${v}`} u={u} v={v} points={positions.edges[u][v].points}/>;
+      return <Edge key={`${u}:${v}`} t={t} u={u} v={v} points={positions.edges[u][v].points}/>;
     });
 
     const svgTransform = `translate(${this.state.zoomX},${this.state.zoomY})scale(${this.state.zoomScale})`;
@@ -134,5 +143,7 @@ class NetworkDiagram extends React.Component {
     );
   }
 }
+
+mixin(NetworkDiagram.prototype, Animate);
 
 export default NetworkDiagram;
