@@ -39,12 +39,21 @@ const openConstructDialog = (callback, text='', constructs=[]) => {
   });
 };
 
+const updateText = (u, text) => {
+  AppDispatcher.dispatch({
+    actionType: 'update-text',
+    text,
+    u
+  });
+};
+
 const AppActions = {
   addConstruct,
   ladderDown,
   ladderUp,
   loadGraph,
-  openConstructDialog
+  openConstructDialog,
+  updateText
 };
 
 export default AppActions;

@@ -35,6 +35,9 @@ class GraphStore extends EventEmitter {
         case 'ladder-down':
           this.handleLadderDown(payload.u, payload.text);
           break;
+        case 'update-text':
+          this.handleUpdateText(payload.u, payload.text);
+          break;
       }
     });
   }
@@ -86,6 +89,12 @@ class GraphStore extends EventEmitter {
     } else {
       graph.addEdge(u, v);
     }
+    this.emit('change');
+  }
+
+  handleUpdateText(u, text) {
+    const {graph} = privates.get(this);
+    graph.vertex(u).text = text;
     this.emit('change');
   }
 

@@ -10,6 +10,7 @@ class ConstructTextField extends React.Component {
   render() {
     return (
       <TextField
+          defaultValue={this.props.defaultValue}
           hintText="Construct"
           fullWidth={true}
           onChange={this.props.onChange}
@@ -22,7 +23,8 @@ class ConstructDialog extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      text: ''
+      text: '',
+      prevText: ''
     };
   }
 
@@ -34,8 +36,8 @@ class ConstructDialog extends React.Component {
     DialogStore.removeRequestConstructDialogListener(this.handleRequestConstructDialog.bind(this));
   }
 
-  handleRequestConstructDialog(callback, text, constructs) {
-    this.setState({callback, text, constructs});
+  handleRequestConstructDialog(callback, prevText, constructs) {
+    this.setState({callback, prevText, constructs});
     this.refs.dialog.show();
   }
 
@@ -68,9 +70,10 @@ class ConstructDialog extends React.Component {
           actionFocus="submit"
           title="Add construct"
           ref="dialog">
-        <ConstructTextField
-            onChange={this.handleInputChange.bind(this)}
-            onEnterKeyDown={this.handleSubmit.bind(this)}/>
+      <ConstructTextField
+          defaultValue={this.state.prevText}
+          onChange={this.handleInputChange.bind(this)}
+          onEnterKeyDown={this.handleSubmit.bind(this)}/>
       </Dialog>
     );
   }

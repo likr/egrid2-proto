@@ -1,5 +1,19 @@
 import React from 'react';
-import {ladderUp, ladderDown, openConstructDialog} from '../app-actions';
+import {ladderUp, ladderDown, updateText, openConstructDialog} from '../app-actions';
+
+class SvgButton extends React.Component {
+  render() {
+    return (
+      <g transform={this.props.transform} onClick={this.props.onClick}>
+        <rect
+            width="24"
+            height="24"
+            fill="#ccc"/>
+          <text y="24" className="material-icons">{this.props.icon}</text>
+      </g>
+    );
+  }
+}
 
 class Vertex extends React.Component {
   constructor(props) {
@@ -39,6 +53,12 @@ class Vertex extends React.Component {
     });
   }
 
+  handleClickEditButton() {
+    openConstructDialog((text) => {
+      updateText(this.props.u, text);
+    }, this.props.d.text);
+  }
+
   render() {
     const {t} = this.props,
           {x0, y0} = this.state;
@@ -58,22 +78,10 @@ class Vertex extends React.Component {
       <g className="vertex" style={style} transform={`translate(${x},${y})`}>
         <circle r="5" fill={color} onClick={this.handleClick.bind(this)}/>
         <text style={textStyle} x="7" y="5" fill={color} onClick={this.handleClick.bind(this)}>{this.props.d.text}</text>
-        <g className="buttons" transform="translate(-20,0)">
-          <rect
-              y="10"
-              width="20"
-              height="20"
-              fill="#888"
-              onClick={this.handleClickLadderUpButton.bind(this)}
-          />
-          <rect
-              x="25"
-              y="10"
-              width="20"
-              height="20"
-              fill="#888"
-              onClick={this.handleClickLadderDownButton.bind(this)}
-          />
+        <g className="buttons" transform="translate(-42,0)">
+          <SvgButton transform="translate(0,10)" icon="arrow_back" onClick={this.handleClickLadderUpButton.bind(this)}/>
+          <SvgButton transform="translate(30,10)" icon="edit" onClick={this.handleClickEditButton.bind(this)}/>
+          <SvgButton transform="translate(60,10)" icon="arrow_forward" onClick={this.handleClickLadderDownButton.bind(this)}/>
         </g>
       </g>
     );
