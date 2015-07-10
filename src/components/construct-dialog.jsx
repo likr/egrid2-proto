@@ -49,7 +49,7 @@ class ConstructDialog extends React.Component {
   }
 
   handleSubmit() {
-    if (true || !this.state.submitting) {
+    if (!this.state.submitting) {
       this.setState({
         submitting: true
       });
