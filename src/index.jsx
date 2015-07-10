@@ -1,6 +1,6 @@
 /* global document*/
 import React from 'react';
-import Main from './main';
+import Main from './components/main';
 import injectTapEventPlugin from 'react-tap-event-plugin';
 
 injectTapEventPlugin();

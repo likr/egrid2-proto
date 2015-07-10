@@ -2,8 +2,8 @@
 import 'whatwg-fetch';
 import React from 'react';
 import {Styles} from 'material-ui';
-import GraphStore from './graph-store';
-import {loadGraph} from './graph-actions';
+import GraphStore from '../graph-store';
+import {loadGraph} from '../graph-actions';
 import AddConstructButton from './add-construct-button';
 import NetworkDiagram from './network-diagram';
 

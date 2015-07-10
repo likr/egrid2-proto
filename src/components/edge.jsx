@@ -1,6 +1,6 @@
 import React from 'react';
 import mixin from 'react-mixin';
-import Animate from './react-animate';
+import Animate from '../react-animate';
 
 const startFrom = ([x, y]) => {
   return `M${x} ${y}`;
