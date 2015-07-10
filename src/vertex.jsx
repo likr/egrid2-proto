@@ -26,10 +26,16 @@ class Vertex extends React.Component {
     const style = {
       cursor: 'pointer'
     };
+    const textStyle = {
+      userSelect: 'none',
+      MozUserSelect: 'none',
+      WebkitUserSelect: 'none',
+      MsUserSelect: 'none'
+    };
     return (
       <g className="vertex" style={style} transform={`translate(${x},${y})`} onClick={this.onClick.bind(this)}>
         <circle r="5" fill={color}/>
-        <text x="7" y="5" fill={color}>{this.props.d.text}</text>
+        <text style={textStyle} x="7" y="5" fill={color}>{this.props.d.text}</text>
       </g>
     );
   }
