@@ -2,6 +2,15 @@ import {EventEmitter} from 'events';
 import Graph from 'eg-graph/lib/graph';
 import AppDispatcher from '../app-dispatcher';
 
+const findExistingVertex = (graph, text) => {
+  for (const u of graph.vertices()) {
+    if (graph.vertex(u).text === text) {
+      return u;
+    }
+  }
+  return null;
+};
+
 const privates = new WeakMap();
 
 class GraphStore extends EventEmitter {
@@ -43,6 +52,9 @@ class GraphStore extends EventEmitter {
 
   handleAddConstruct(text) {
     const {graph} = privates.get(this);
+    if (findExistingVertex(graph, text) !== null) {
+      return;
+    }
     graph.addVertex({
       text
     });
@@ -51,19 +63,29 @@ class GraphStore extends EventEmitter {
 
   handleLadderUp(u, text) {
     const {graph} = privates.get(this);
-    const v = graph.addVertex({
-      text
-    });
-    graph.addEdge(v, u);
+    const v = findExistingVertex(graph, text);
+    if (v === null) {
+      const w = graph.addVertex({
+        text
+      });
+      graph.addEdge(w, u);
+    } else {
+      graph.addEdge(v, u);
+    }
     this.emit('change');
   }
 
   handleLadderDown(u, text) {
     const {graph} = privates.get(this);
-    const v = graph.addVertex({
-      text
-    });
-    graph.addEdge(u, v);
+    const v = findExistingVertex(graph, text);
+    if (v === null) {
+      const w = graph.addVertex({
+        text
+      });
+      graph.addEdge(u, w);
+    } else {
+      graph.addEdge(u, v);
+    }
     this.emit('change');
   }
 
