@@ -1,6 +1,6 @@
 import {EventEmitter} from 'events';
 import Graph from 'eg-graph/lib/graph';
-import AppDispatcher from './app-dispatcher';
+import AppDispatcher from '../app-dispatcher';
 
 const privates = new WeakMap();
 
@@ -19,6 +19,12 @@ class GraphStore extends EventEmitter {
           break;
         case 'add-construct':
           this.handleAddConstruct(payload.text);
+          break;
+        case 'ladder-up':
+          this.handleLadderUp(payload.u, payload.text);
+          break;
+        case 'ladder-down':
+          this.handleLadderDown(payload.u, payload.text);
           break;
       }
     });
@@ -40,6 +46,24 @@ class GraphStore extends EventEmitter {
     graph.addVertex({
       text
     });
+    this.emit('change');
+  }
+
+  handleLadderUp(u, text) {
+    const {graph} = privates.get(this);
+    const v = graph.addVertex({
+      text
+    });
+    graph.addEdge(v, u);
+    this.emit('change');
+  }
+
+  handleLadderDown(u, text) {
+    const {graph} = privates.get(this);
+    const v = graph.addVertex({
+      text
+    });
+    graph.addEdge(u, v);
     this.emit('change');
   }
 

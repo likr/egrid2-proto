@@ -2,9 +2,10 @@
 import 'whatwg-fetch';
 import React from 'react';
 import {Styles} from 'material-ui';
-import GraphStore from '../graph-store';
-import {loadGraph} from '../graph-actions';
+import GraphStore from '../stores/graph-store';
+import {loadGraph} from '../app-actions';
 import AddConstructButton from './add-construct-button';
+import ConstructDialog from './construct-dialog';
 import NetworkDiagram from './network-diagram';
 
 const ThemeManager = new Styles.ThemeManager();
@@ -71,6 +72,7 @@ class Main extends React.Component {
         <div style={buttonsStyle}>
           <AddConstructButton/>
         </div>
+        <ConstructDialog/>
       </div>
     );
   }

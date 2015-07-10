@@ -5,8 +5,8 @@ import Vertex from './vertex';
 import Edge from './edge';
 
 const layouter = new Layouter()
-  .layerMargin(100)
-  .vertexMargin(20)
+  .layerMargin(150)
+  .vertexMargin(80)
   .vertexWidth(() => 10)
   .vertexHeight(() => 10)
   .edgeWidth(() => 1);
@@ -19,8 +19,8 @@ class NetworkDiagram extends React.Component {
       x0: 0,
       y0: 0,
       draggin: false,
-      zoomX: 10,
-      zoomY: 10,
+      zoomX: 50,
+      zoomY: 50,
       zoomScale: 1,
       graph: props.graph,
       positions: layouter.layout(props.graph)
@@ -102,10 +102,10 @@ class NetworkDiagram extends React.Component {
   render() {
     const {graph, positions} = this.state;
     const vertices = graph.vertices().map((u) => {
-      return <Vertex key={u} d={graph.vertex(u)} position={positions.vertices[u]}/>;
+      return <Vertex key={u} u={u} d={graph.vertex(u)} position={positions.vertices[u]}/>;
     });
     const edges = graph.edges().map(([u, v]) => {
-      return <Edge key={`${u}:${v}`} points={positions.edges[u][v].points}/>;
+      return <Edge key={`${u}:${v}`} u={u} v={v} points={positions.edges[u][v].points}/>;
     });
 
     const svgTransform = `translate(${this.state.zoomX},${this.state.zoomY})scale(${this.state.zoomScale})`;
