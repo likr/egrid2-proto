@@ -15,50 +15,46 @@ class NetworkDiagram extends React.Component {
   constructor(props) {
     super(props);
 
-    const graph = new Graph();
-    for (const {u, d} of props.data.vertices) {
-      graph.addVertex(u, d);
-    }
-    for (const {u, v, d} of props.data.edges) {
-      graph.addEdge(u, v, d);
-    }
-
     this.state = {
+      x0: 0,
+      y0: 0,
+      draggin: false,
       zoomX: 10,
       zoomY: 10,
       zoomScale: 1,
-      graph,
-      positions: layouter.layout(graph)
+      graph: props.graph,
+      positions: layouter.layout(props.graph)
     };
   }
 
   componentWillReceiveProps(props) {
-    const graph = new Graph();
-    for (const {u, d} of props.data.vertices) {
-      graph.addVertex(u, d);
-    }
-    for (const {u, v, d} of props.data.edges) {
-      graph.addEdge(u, v, d);
-    }
-
     this.setState({
-      graph,
-      positions: layouter.layout(graph)
+      graph: props.graph,
+      positions: layouter.layout(props.graph)
     });
   }
 
   onMouseDown(e) {
-    this.x0 = e.clientX;
-    this.y0 = e.clientY;
+    this.setState({
+      x0: e.clientX,
+      y0: e.clientY,
+      dragging: true
+    });
+  }
+
+  onMouseUp(e) {
+    this.setState({
+      dragging: false
+    });
   }
 
   onMouseMove(e) {
-    if (e.buttons > 0) {
-      const dx = e.clientX - this.x0,
-            dy = e.clientY - this.y0;
-      this.x0 = e.clientX;
-      this.y0 = e.clientY;
+    if (this.state.dragging) {
+      const dx = e.clientX - this.state.x0,
+            dy = e.clientY - this.state.y0;
       this.setState({
+        x0: e.clientX,
+        y0: e.clientY,
         zoomX: this.state.zoomX + dx,
         zoomY: this.state.zoomY + dy
       });
@@ -94,6 +90,7 @@ class NetworkDiagram extends React.Component {
       <svg width="100%" height="100%"
           style={svgStyle}
           onMouseDown={this.onMouseDown.bind(this)}
+          onMouseUp={this.onMouseUp.bind(this)}
           onMouseMove={this.onMouseMove.bind(this)}
           onWheel={this.onWheel.bind(this)}>
         <g className="contents" transform={svgTransform}>

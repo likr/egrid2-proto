@@ -1,4 +1,6 @@
 import React from 'react';
+import GraphStore from './graph-store';
+import {loadGraph} from './graph-actions';
 import NetworkDiagram from './network-diagram';
 
 class Main extends React.Component {
@@ -6,19 +8,25 @@ class Main extends React.Component {
     super(props);
 
     this.state = {
-      data: {
-        vertices: [],
-        edges: []
-      }
+      graph: GraphStore.getGraph()
     };
   }
 
   componentDidMount() {
     fetch('data/graph.json')
       .then((response) => response.json())
-      .then((data) => {
-        this.setState({data: data});
-      });
+      .then(loadGraph);
+    GraphStore.addChangeListener(this.onChangeGraph.bind(this));
+  }
+
+  componentWillUnmount() {
+    GraphStore.removeChangeListener(this.onChangeGraph.bind(this));
+  }
+
+  onChangeGraph() {
+    this.setState({
+      graph: GraphStore.getGraph()
+    });
   }
 
   render() {
@@ -31,7 +39,7 @@ class Main extends React.Component {
     };
     return (
       <div style={wrapperStyle}>
-        <NetworkDiagram data={this.state.data}/>
+        <NetworkDiagram graph={this.state.graph}/>
       </div>
     );
   }
