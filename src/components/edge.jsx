@@ -51,7 +51,13 @@ class Edge extends React.Component {
     });
     return (
       <g className="edge">
-        <path fill="none" stroke="#ccc" d={svgPath(points, true)}/>
+        <path
+            d={svgPath(points, true)}
+            fill="none"
+            stroke="#ccc"
+            strokeDasharray={this.props.reverse ? 5 : 'none'}
+            strokeWidth="3"
+        />
       </g>
     );
   }

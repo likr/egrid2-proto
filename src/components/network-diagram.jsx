@@ -114,7 +114,9 @@ class NetworkDiagram extends React.Component {
       return <Vertex key={u} t={t} u={u} d={graph.vertex(u)} position={positions.vertices[u]}/>;
     });
     const edges = graph.edges().map(([u, v]) => {
-      return <Edge key={`${u}:${v}`} t={t} u={u} v={v} points={positions.edges[u][v].points}/>;
+      const reverse = !positions.edges[u][v],
+            points = reverse ? positions.edges[v][u].points : positions.edges[u][v].points;
+      return <Edge key={`${u}:${v}`} t={t} u={u} v={v} points={points} reverse={reverse}/>;
     });
 
     const svgTransform = `translate(${this.state.zoomX},${this.state.zoomY})scale(${this.state.zoomScale})`;
