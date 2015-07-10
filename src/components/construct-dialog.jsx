@@ -11,6 +11,7 @@ class ConstructTextField extends React.Component {
     return (
       <TextField
           defaultValue={this.props.defaultValue}
+          disabled={this.props.disabled}
           hintText="Construct"
           fullWidth={true}
           onChange={this.props.onChange}
@@ -24,7 +25,8 @@ class ConstructDialog extends React.Component {
     super(props);
     this.state = {
       text: '',
-      prevText: ''
+      prevText: '',
+      submitting: false
     };
   }
 
@@ -37,14 +39,24 @@ class ConstructDialog extends React.Component {
   }
 
   handleRequestConstructDialog(callback, prevText, constructs) {
-    this.setState({callback, prevText, constructs});
+    this.setState({
+      callback,
+      prevText,
+      constructs,
+      submitting: false
+    });
     this.refs.dialog.show();
   }
 
   handleSubmit() {
-    this.refs.dialog.dismiss();
-    if (this.state.text) {
-      this.state.callback(this.state.text);
+    if (true || !this.state.submitting) {
+      this.setState({
+        submitting: true
+      });
+      this.refs.dialog.dismiss();
+      if (this.state.text) {
+        this.state.callback(this.state.text);
+      }
     }
   }
 
@@ -70,10 +82,11 @@ class ConstructDialog extends React.Component {
           actionFocus="submit"
           title="Add construct"
           ref="dialog">
-      <ConstructTextField
-          defaultValue={this.state.prevText}
-          onChange={this.handleInputChange.bind(this)}
-          onEnterKeyDown={this.handleSubmit.bind(this)}/>
+        <ConstructTextField
+            disabled={this.state.submitting}
+            defaultValue={this.state.prevText}
+            onChange={this.handleInputChange.bind(this)}
+            onEnterKeyDown={this.handleSubmit.bind(this)}/>
       </Dialog>
     );
   }
