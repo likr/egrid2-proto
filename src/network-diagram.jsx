@@ -34,31 +34,57 @@ class NetworkDiagram extends React.Component {
     });
   }
 
-  onMouseDown(e) {
+  dragStart(x, y) {
     this.setState({
-      x0: e.clientX,
-      y0: e.clientY,
+      x0: x,
+      y0: y,
       dragging: true
     });
   }
 
-  onMouseUp(e) {
+  dragEnd() {
     this.setState({
       dragging: false
     });
   }
 
-  onMouseMove(e) {
+  dragMove(x, y) {
     if (this.state.dragging) {
-      const dx = e.clientX - this.state.x0,
-            dy = e.clientY - this.state.y0;
+      const dx = x - this.state.x0,
+            dy = y - this.state.y0;
       this.setState({
-        x0: e.clientX,
-        y0: e.clientY,
+        x0: x,
+        y0: y,
         zoomX: this.state.zoomX + dx,
         zoomY: this.state.zoomY + dy
       });
     }
+  }
+
+  onMouseDown({clientX, clientY}) {
+    this.dragStart(clientX, clientY);
+  }
+
+  onMouseUp() {
+    this.dragEnd();
+  }
+
+  onMouseMove({clientX, clientY}) {
+    this.dragMove(clientX, clientY);
+  }
+
+  onTouchStart({touches}) {
+    const {clientX, clientY} = touches[0];
+    this.dragStart(clientX, clientY);
+  }
+
+  onTouchEnd() {
+    this.dragEnd();
+  }
+
+  onTouchMove({touches}) {
+    const {clientX, clientY} = touches[0];
+    this.dragMove(clientX, clientY);
   }
 
   onWheel({clientX, clientY, deltaY, target}) {
@@ -92,6 +118,9 @@ class NetworkDiagram extends React.Component {
           onMouseDown={this.onMouseDown.bind(this)}
           onMouseUp={this.onMouseUp.bind(this)}
           onMouseMove={this.onMouseMove.bind(this)}
+          onTouchStart={this.onTouchStart.bind(this)}
+          onTouchEnd={this.onTouchEnd.bind(this)}
+          onTouchMove={this.onTouchMove.bind(this)}
           onWheel={this.onWheel.bind(this)}>
         <g className="contents" transform={svgTransform}>
           <g className="edges">
