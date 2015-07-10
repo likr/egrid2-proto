@@ -8,7 +8,8 @@
     "eg-graph": "0.0.14",
     "react": "^0.13.3",
     "react-mixin": "^1.5.0",
-    "react.animate": "^1.0.0"
+    "react.animate": "^1.0.0",
+    "whatwg-fetch": "^0.9.0"
   },
   "devDependencies": {
     "babelify": "^6.1.2",

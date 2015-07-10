@@ -1,4 +1,6 @@
+/* global document,fetch */
 import React from 'react';
+import 'whatwg-fetch';
 import GraphStore from './graph-store';
 import {loadGraph} from './graph-actions';
 import NetworkDiagram from './network-diagram';
