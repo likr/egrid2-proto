@@ -6,8 +6,10 @@
   "dependencies": {
     "babel-runtime": "^5.6.15",
     "eg-graph": "0.0.14",
+    "material-ui": "^0.10.0",
     "react": "^0.13.3",
     "react-mixin": "^1.5.0",
+    "react-tap-event-plugin": "^0.1.7",
     "react.animate": "^1.0.0",
     "whatwg-fetch": "^0.9.0"
   },

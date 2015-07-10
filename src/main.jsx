@@ -1,9 +1,13 @@
 /* global fetch */
-import React from 'react';
 import 'whatwg-fetch';
+import React from 'react';
+import {Styles} from 'material-ui';
 import GraphStore from './graph-store';
 import {loadGraph} from './graph-actions';
+import AddConstructButton from './add-construct-button';
 import NetworkDiagram from './network-diagram';
+
+const ThemeManager = new Styles.ThemeManager();
 
 class Main extends React.Component {
   constructor(props) {
@@ -21,6 +25,15 @@ class Main extends React.Component {
     GraphStore.addChangeListener(this.onChangeGraph.bind(this));
   }
 
+  componentWillMount() {
+    ThemeManager.setComponentThemes({
+      toggle: {
+        thumbOnColor: String,
+        trackOnColor: String
+      }
+    });
+  }
+
   componentWillUnmount() {
     GraphStore.removeChangeListener(this.onChangeGraph.bind(this));
   }
@@ -31,6 +44,12 @@ class Main extends React.Component {
     });
   }
 
+  getChildContext() {
+    return {
+      muiTheme: ThemeManager.getCurrentTheme()
+    };
+  }
+
   render() {
     const wrapperStyle = {
       position: 'absolute',
@@ -39,12 +58,26 @@ class Main extends React.Component {
       left: 0,
       right: 0
     };
+    const buttonsStyle = {
+      position: 'absolute',
+      left: 10,
+      bottom: 10
+    };
     return (
-      <div style={wrapperStyle}>
-        <NetworkDiagram graph={this.state.graph}/>
+      <div>
+        <div style={wrapperStyle}>
+          <NetworkDiagram graph={this.state.graph}/>
+        </div>
+        <div style={buttonsStyle}>
+          <AddConstructButton/>
+        </div>
       </div>
     );
   }
 }
+
+Main.childContextTypes = {
+  muiTheme: React.PropTypes.object
+};
 
 export default Main;

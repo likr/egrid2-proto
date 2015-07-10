@@ -15,13 +15,16 @@ class GraphStore extends EventEmitter {
     AppDispatcher.register((payload) => {
       switch (payload.actionType) {
         case 'load-graph':
-          this.onLoadGraph(payload.data);
+          this.handleLoadGraph(payload.data);
+          break;
+        case 'add-construct':
+          this.handleAddConstruct(payload.text);
           break;
       }
     });
   }
 
-  onLoadGraph(data) {
+  handleLoadGraph(data) {
     const {graph} = privates.get(this);
     for (const {u, d} of data.vertices) {
       graph.addVertex(u, d);
@@ -29,6 +32,14 @@ class GraphStore extends EventEmitter {
     for (const {u, v, d} of data.edges) {
       graph.addEdge(u, v, d);
     }
+    this.emit('change');
+  }
+
+  handleAddConstruct(text) {
+    const {graph} = privates.get(this);
+    graph.addVertex({
+      text
+    });
     this.emit('change');
   }
 
