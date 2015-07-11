@@ -39,6 +39,13 @@ const openConstructDialog = (callback, text='', constructs=[]) => {
   });
 };
 
+const selectVertex = (u) => {
+  AppDispatcher.dispatch({
+    actionType: 'select-vertex',
+    u
+  });
+};
+
 const updateText = (u, text) => {
   AppDispatcher.dispatch({
     actionType: 'update-text',
@@ -53,6 +60,7 @@ const AppActions = {
   ladderUp,
   loadGraph,
   openConstructDialog,
+  selectVertex,
   updateText
 };
 

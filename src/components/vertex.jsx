@@ -1,5 +1,5 @@
 import React from 'react';
-import {ladderUp, ladderDown, updateText, openConstructDialog} from '../app-actions';
+import {ladderDown, ladderUp, openConstructDialog, selectVertex, updateText} from '../app-actions';
 
 class SvgButton extends React.Component {
   render() {
@@ -18,16 +18,10 @@ class SvgButton extends React.Component {
 class Vertex extends React.Component {
   constructor(props) {
     super(props);
-
-    this.state = {
-      selected: false
-    };
   }
 
   handleClick() {
-    this.setState({
-      selected: !this.state.selected
-    });
+    selectVertex(this.props.d.u);
   }
 
   handleClickLadderUpButton() {
@@ -53,7 +47,7 @@ class Vertex extends React.Component {
           {x0, y0} = this.props.d;
     const x = (this.props.d.x - x0) * t + x0,
           y = (this.props.d.y - y0) * t + y0,
-          color = this.state.selected ? 'red' : 'black';
+          color = this.props.d.selected ? 'red' : 'black';
     const style = {
       cursor: 'pointer'
     };

@@ -23,7 +23,7 @@ class Main extends React.Component {
     fetch('data/graph.json')
       .then((response) => response.json())
       .then(loadGraph);
-    GraphStore.addChangeListener(this.onChangeGraph.bind(this));
+    GraphStore.addChangeListener(this.handleChangeLayout.bind(this));
   }
 
   componentWillMount() {
@@ -39,7 +39,7 @@ class Main extends React.Component {
     GraphStore.removeChangeListener(this.onChangeGraph.bind(this));
   }
 
-  onChangeGraph() {
+  handleChangeLayout() {
     this.setState({
       layout: GraphStore.getLayout()
     });

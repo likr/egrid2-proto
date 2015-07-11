@@ -31,8 +31,9 @@ const updateLayout = (that) => {
                 {x, y} = positions.vertices[u],
                 enter = !positions0.vertices[u],
                 x0 = enter ? 0 : positions0.vertices[u].x,
-                y0 = enter ? 0 : positions0.vertices[u].y;
-          return {u, text, x, y, x0, y0};
+                y0 = enter ? 0 : positions0.vertices[u].y,
+                selected = enter ? false : positions0.vertices[u].selected;
+          return {u, text, x, y, x0, y0, selected};
         }),
         edges = graph.edges().map(([u, v]) => {
           const reversed = !positions.edges[u][v],
@@ -83,6 +84,9 @@ class GraphStore extends EventEmitter {
           break;
         case 'update-text':
           this.handleUpdateText(payload.u, payload.text);
+          break;
+        case 'select-vertex':
+          this.handleSelectVertex(payload.u);
           break;
       }
     });
@@ -136,6 +140,12 @@ class GraphStore extends EventEmitter {
       graph.addEdge(u, v);
     }
     updateLayout(this);
+  }
+
+  handleSelectVertex(u) {
+    const {layout} = privates.get(this);
+    layout.vertices[u].selected = !layout.vertices[u].selected;
+    this.emit('change');
   }
 
   handleUpdateText(u, text) {

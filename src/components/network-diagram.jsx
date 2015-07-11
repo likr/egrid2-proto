@@ -20,10 +20,12 @@ class NetworkDiagram extends React.Component {
     };
   }
 
-  componentWillReceiveProps(props) {
-    this.setState({
-      t: 0
-    });
+  componentWillReceiveProps(nextProps) {
+    if (this.props.layout !== nextProps.layout) {
+      this.setState({
+        t: 0
+      });
+    }
   }
 
   componentDidUpdate(prevProps) {
