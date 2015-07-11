@@ -29,24 +29,15 @@ class Edge extends React.Component {
     super(props);
 
     this.state = {
-      t: 0,
-      points0: props.d.points.map(() => [0, 0])
+      t: 0
     };
-  }
-
-  componentWillReceiveProps(nextProps) {
-    if (nextProps.t === 1) {
-      this.setState({
-        points0: this.props.d.points
-      });
-    }
   }
 
   render() {
     const t = this.props.t;
     const points = this.props.d.points.map((point, i) => {
       const [x, y] = point,
-            [x0, y0] = i < this.state.points0.length ? this.state.points0[i] : point;
+            [x0, y0] = i < this.props.d.points0.length ? this.props.d.points0[i] : point;
       return [(x - x0) * t + x0, (y - y0) * t + y0];
     });
     return (

@@ -20,19 +20,8 @@ class Vertex extends React.Component {
     super(props);
 
     this.state = {
-      x0: 0,
-      y0: 0,
       selected: false
     };
-  }
-
-  componentWillReceiveProps(nextProps) {
-    if (nextProps.t === 1) {
-      this.setState({
-        x0: this.props.d.x,
-        y0: this.props.d.y
-      });
-    }
   }
 
   handleClick() {
@@ -61,7 +50,7 @@ class Vertex extends React.Component {
 
   render() {
     const {t} = this.props,
-          {x0, y0} = this.state;
+          {x0, y0} = this.props.d;
     const x = (this.props.d.x - x0) * t + x0,
           y = (this.props.d.y - y0) * t + y0,
           color = this.state.selected ? 'red' : 'black';

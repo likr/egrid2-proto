@@ -24,18 +24,28 @@ const privates = new WeakMap();
 const updateLayout = (that) => {
   const {graph} = privates.get(that),
         positions = layouter.layout(graph),
+        positions0 = privates.get(that).positions,
         vertices = graph.vertices().map((u) => {
           const {text} = graph.vertex(u),
-                {x, y, width, height} = positions.vertices[u];
-          return {u, text, x, y, width, height};
+                {x, y} = positions.vertices[u],
+                enter = !positions0.vertices[u],
+                x0 = enter ? 0 : positions0.vertices[u].x,
+                y0 = enter ? 0 : positions0.vertices[u].y;
+          return {u, text, x, y, x0, y0};
         }),
         edges = graph.edges().map(([u, v]) => {
           const reversed = !positions.edges[u][v],
-                position = reversed ? positions.edges[v][u] : positions.edges[u][v],
-                points = position.points;
-          return {u, v, points, reversed};
+                points = reversed ? positions.edges[v][u].points : positions.edges[u][v].points,
+                enter = reversed
+                  ? !positions0.edges[v] || !positions0.edges[v][u]
+                  : !positions0.edges[u] || !positions0.edges[u][v],
+                points0 = enter
+                  ? points.map(() => [0, 0])
+                  : (reversed ? positions0.edges[v][u].points : positions0.edges[u][v].points);
+          return {u, v, points, points0, reversed};
         });
   privates.get(that).layout = {vertices, edges};
+  privates.get(that).positions = positions;
 
   that.emit('change');
 };
@@ -46,6 +56,10 @@ class GraphStore extends EventEmitter {
 
     privates.set(this, {
       graph: new Graph(),
+      positions: {
+        vertices: {},
+        edges: {}
+      },
       layout: {
         vertices: [],
         edges: []
