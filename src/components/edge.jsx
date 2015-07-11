@@ -30,21 +30,21 @@ class Edge extends React.Component {
 
     this.state = {
       t: 0,
-      points0: props.points.map(() => [0, 0])
+      points0: props.d.points.map(() => [0, 0])
     };
   }
 
   componentWillReceiveProps(nextProps) {
     if (nextProps.t === 1) {
       this.setState({
-        points0: this.props.points
+        points0: this.props.d.points
       });
     }
   }
 
   render() {
     const t = this.props.t;
-    const points = this.props.points.map((point, i) => {
+    const points = this.props.d.points.map((point, i) => {
       const [x, y] = point,
             [x0, y0] = i < this.state.points0.length ? this.state.points0[i] : point;
       return [(x - x0) * t + x0, (y - y0) * t + y0];
@@ -55,7 +55,7 @@ class Edge extends React.Component {
             d={svgPath(points, true)}
             fill="none"
             stroke="#ccc"
-            strokeDasharray={this.props.reverse ? 5 : 'none'}
+            strokeDasharray={this.props.d.reversed ? 5 : 'none'}
             strokeWidth="3"
         />
       </g>

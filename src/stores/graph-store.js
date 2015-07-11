@@ -1,6 +1,14 @@
 import {EventEmitter} from 'events';
 import Graph from 'eg-graph/lib/graph';
+import Layouter from 'eg-graph/lib/layouter/sugiyama';
 import AppDispatcher from '../app-dispatcher';
+
+const layouter = new Layouter()
+  .layerMargin(150)
+  .vertexMargin(80)
+  .vertexWidth(() => 10)
+  .vertexHeight(() => 10)
+  .edgeWidth(() => 1);
 
 const findExistingVertex = (graph, text) => {
   for (const u of graph.vertices()) {
@@ -13,12 +21,35 @@ const findExistingVertex = (graph, text) => {
 
 const privates = new WeakMap();
 
+const updateLayout = (that) => {
+  const {graph} = privates.get(that),
+        positions = layouter.layout(graph),
+        vertices = graph.vertices().map((u) => {
+          const {text} = graph.vertex(u),
+                {x, y, width, height} = positions.vertices[u];
+          return {u, text, x, y, width, height};
+        }),
+        edges = graph.edges().map(([u, v]) => {
+          const reversed = !positions.edges[u][v],
+                position = reversed ? positions.edges[v][u] : positions.edges[u][v],
+                points = position.points;
+          return {u, v, points, reversed};
+        });
+  privates.get(that).layout = {vertices, edges};
+
+  that.emit('change');
+};
+
 class GraphStore extends EventEmitter {
   constructor() {
     super();
 
     privates.set(this, {
-      graph: new Graph()
+      graph: new Graph(),
+      layout: {
+        vertices: [],
+        edges: []
+      }
     });
 
     AppDispatcher.register((payload) => {
@@ -50,7 +81,7 @@ class GraphStore extends EventEmitter {
     for (const {u, v, d} of data.edges) {
       graph.addEdge(u, v, d);
     }
-    this.emit('change');
+    updateLayout(this);
   }
 
   handleAddConstruct(text) {
@@ -61,7 +92,7 @@ class GraphStore extends EventEmitter {
     graph.addVertex({
       text
     });
-    this.emit('change');
+    updateLayout(this);
   }
 
   handleLadderUp(u, text) {
@@ -75,7 +106,7 @@ class GraphStore extends EventEmitter {
     } else {
       graph.addEdge(v, u);
     }
-    this.emit('change');
+    updateLayout(this);
   }
 
   handleLadderDown(u, text) {
@@ -89,17 +120,17 @@ class GraphStore extends EventEmitter {
     } else {
       graph.addEdge(u, v);
     }
-    this.emit('change');
+    updateLayout(this);
   }
 
   handleUpdateText(u, text) {
     const {graph} = privates.get(this);
     graph.vertex(u).text = text;
-    this.emit('change');
+    updateLayout(this);
   }
 
-  getGraph() {
-    return privates.get(this).graph;
+  getLayout() {
+    return privates.get(this).layout;
   }
 
   addChangeListener(callback) {

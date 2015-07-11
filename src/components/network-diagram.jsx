@@ -1,17 +1,9 @@
 import React from 'react';
 import mixin from 'react-mixin';
 import Graph from 'eg-graph/lib/graph';
-import Layouter from 'eg-graph/lib/layouter/sugiyama';
 import Animate from '../react-animate';
 import Vertex from './vertex';
 import Edge from './edge';
-
-const layouter = new Layouter()
-  .layerMargin(150)
-  .vertexMargin(80)
-  .vertexWidth(() => 10)
-  .vertexHeight(() => 10)
-  .edgeWidth(() => 1);
 
 class NetworkDiagram extends React.Component {
   constructor(props) {
@@ -24,20 +16,18 @@ class NetworkDiagram extends React.Component {
       draggin: false,
       zoomX: 50,
       zoomY: 50,
-      zoomScale: 1,
-      positions: layouter.layout(props.graph)
+      zoomScale: 1
     };
   }
 
   componentWillReceiveProps(props) {
     this.setState({
-      t: 0,
-      positions: layouter.layout(props.graph)
+      t: 0
     });
   }
 
-  componentDidUpdate(_, prevState) {
-    if (this.state.positions !== prevState.positions) {
+  componentDidUpdate(prevProps) {
+    if (this.props.layout !== prevProps.layout) {
       this.animate({t: 1}, 1000);
     }
   }
@@ -108,15 +98,13 @@ class NetworkDiagram extends React.Component {
   }
 
   render() {
-    const {graph} = this.props,
-          {t, positions} = this.state;
-    const vertices = graph.vertices().map((u) => {
-      return <Vertex key={u} t={t} u={u} d={graph.vertex(u)} position={positions.vertices[u]}/>;
+    const {layout} = this.props,
+          {t} = this.state;
+    const vertices = layout.vertices.map((d) => {
+      return <Vertex key={d.u} t={t} d={d}/>;
     });
-    const edges = graph.edges().map(([u, v]) => {
-      const reverse = !positions.edges[u][v],
-            points = reverse ? positions.edges[v][u].points : positions.edges[u][v].points;
-      return <Edge key={`${u}:${v}`} t={t} u={u} v={v} points={points} reverse={reverse}/>;
+    const edges = layout.edges.map((d) => {
+      return <Edge key={`${d.u}:${d.v}`} t={t} d={d}/>;
     });
 
     const svgTransform = `translate(${this.state.zoomX},${this.state.zoomY})scale(${this.state.zoomScale})`;

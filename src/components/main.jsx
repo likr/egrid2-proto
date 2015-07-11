@@ -15,7 +15,7 @@ class Main extends React.Component {
     super(props);
 
     this.state = {
-      graph: GraphStore.getGraph()
+      layout: GraphStore.getLayout()
     };
   }
 
@@ -41,7 +41,7 @@ class Main extends React.Component {
 
   onChangeGraph() {
     this.setState({
-      graph: GraphStore.getGraph()
+      layout: GraphStore.getLayout()
     });
   }
 
@@ -67,7 +67,7 @@ class Main extends React.Component {
     return (
       <div>
         <div style={wrapperStyle}>
-          <NetworkDiagram graph={this.state.graph}/>
+          <NetworkDiagram layout={this.state.layout}/>
         </div>
         <div style={buttonsStyle}>
           <AddConstructButton/>
