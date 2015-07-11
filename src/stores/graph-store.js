@@ -5,7 +5,8 @@ import AppDispatcher from '../app-dispatcher';
 
 const layouter = new Layouter()
   .layerMargin(150)
-  .vertexMargin(80)
+  .vertexMargin(10)
+  .vertexBottomMargin(() => 30)
   .vertexWidth(() => 10)
   .vertexHeight(() => 10)
   .edgeWidth(() => 1);
