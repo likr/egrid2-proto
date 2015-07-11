@@ -39,6 +39,12 @@ const openConstructDialog = (callback, text='', constructs=[]) => {
   });
 };
 
+const removeSelectedConstructs = () => {
+  AppDispatcher.dispatch({
+    actionType: 'remove-selected-constructs'
+  });
+};
+
 const selectVertex = (u) => {
   AppDispatcher.dispatch({
     actionType: 'select-vertex',
@@ -60,6 +66,7 @@ const AppActions = {
   ladderUp,
   loadGraph,
   openConstructDialog,
+  removeSelectedConstructs,
   selectVertex,
   updateText
 };

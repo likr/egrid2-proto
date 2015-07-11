@@ -32,7 +32,7 @@ const updateLayout = (that) => {
                 enter = !positions0.vertices[u],
                 x0 = enter ? 0 : positions0.vertices[u].x,
                 y0 = enter ? 0 : positions0.vertices[u].y,
-                selected = enter ? false : positions0.vertices[u].selected;
+                selected = privates.get(that).selected[u];
           return {u, text, x, y, x0, y0, selected};
         }),
         edges = graph.edges().map(([u, v]) => {
@@ -52,12 +52,21 @@ const updateLayout = (that) => {
   that.emit('change');
 };
 
+const updateSelection = (that) => {
+  const {selected, layout} = privates.get(that);
+  for (const d of layout.vertices) {
+    d.selected = selected[d.u];
+  }
+  that.emit('change');
+};
+
 class GraphStore extends EventEmitter {
   constructor() {
     super();
 
     privates.set(this, {
       graph: new Graph(),
+      selected: {},
       positions: {
         vertices: {},
         edges: {}
@@ -88,6 +97,9 @@ class GraphStore extends EventEmitter {
         case 'select-vertex':
           this.handleSelectVertex(payload.u);
           break;
+        case 'remove-selected-constructs':
+          this.handleRemoveSelectedConstructs();
+          break;
       }
     });
   }
@@ -104,24 +116,26 @@ class GraphStore extends EventEmitter {
   }
 
   handleAddConstruct(text) {
-    const {graph} = privates.get(this);
+    const {graph, selected} = privates.get(this);
     if (findExistingVertex(graph, text) !== null) {
       return;
     }
-    graph.addVertex({
+    const u = graph.addVertex({
       text
     });
+    selected[u] = false;
     updateLayout(this);
   }
 
   handleLadderUp(u, text) {
-    const {graph} = privates.get(this);
+    const {graph, selected} = privates.get(this);
     const v = findExistingVertex(graph, text);
     if (v === null) {
       const w = graph.addVertex({
         text
       });
       graph.addEdge(w, u);
+      selected[w] = false;
     } else {
       graph.addEdge(v, u);
     }
@@ -129,23 +143,34 @@ class GraphStore extends EventEmitter {
   }
 
   handleLadderDown(u, text) {
-    const {graph} = privates.get(this);
+    const {graph, selected} = privates.get(this);
     const v = findExistingVertex(graph, text);
     if (v === null) {
       const w = graph.addVertex({
         text
       });
       graph.addEdge(u, w);
+      selected[w] = false;
     } else {
       graph.addEdge(u, v);
     }
     updateLayout(this);
   }
 
+  handleRemoveSelectedConstructs() {
+    const {graph, selected} = privates.get(this);
+    for (const u of graph.vertices()) {
+      if (selected[u]) {
+        graph.removeVertex(u);
+      }
+    }
+    updateLayout(this);
+  }
+
   handleSelectVertex(u) {
-    const {layout} = privates.get(this);
-    layout.vertices[u].selected = !layout.vertices[u].selected;
-    this.emit('change');
+    const {selected} = privates.get(this);
+    selected[u] = !selected[u];
+    updateSelection(this);
   }
 
   handleUpdateText(u, text) {

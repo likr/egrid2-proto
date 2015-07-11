@@ -1,12 +1,10 @@
 import React from 'react';
 import {FontIcon, FloatingActionButton} from 'material-ui';
-import {addConstruct, openConstructDialog} from '../app-actions';
+import {removeSelectedConstructs} from '../app-actions';
 
-class AddConstructButton extends React.Component {
+class RemoveSelectedConstructsButton extends React.Component {
   handleClickButton() {
-    openConstructDialog((text) => {
-      addConstruct(text);
-    });
+    removeSelectedConstructs();
   }
 
   render() {
@@ -15,10 +13,10 @@ class AddConstructButton extends React.Component {
     };
     return (
       <FloatingActionButton style={style} onClick={this.handleClickButton.bind(this)}>
-        <FontIcon className="material-icons">add</FontIcon>
+        <FontIcon className="material-icons">delete</FontIcon>
       </FloatingActionButton>
     );
   }
 }
 
-export default AddConstructButton;
+export default RemoveSelectedConstructsButton;

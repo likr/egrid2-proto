@@ -7,6 +7,7 @@ import {loadGraph} from '../app-actions';
 import AddConstructButton from './add-construct-button';
 import ConstructDialog from './construct-dialog';
 import NetworkDiagram from './network-diagram';
+import RemoveSelectedConstructsButton from './remove-selected-constructs-button';
 
 const ThemeManager = new Styles.ThemeManager();
 
@@ -71,6 +72,7 @@ class Main extends React.Component {
         </div>
         <div style={buttonsStyle}>
           <AddConstructButton/>
+          <RemoveSelectedConstructsButton/>
         </div>
         <ConstructDialog/>
       </div>
