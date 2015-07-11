@@ -36,28 +36,19 @@ const updateLayout = (that) => {
           return {u, text, x, y, x0, y0, selected};
         }),
         edges = graph.edges().map(([u, v]) => {
-          const reversed = !positions.edges[u][v],
-                points = reversed ? positions.edges[v][u].points : positions.edges[u][v].points,
-                enter = reversed
-                  ? !positions0.edges[v] || !positions0.edges[v][u]
-                  : !positions0.edges[u] || !positions0.edges[u][v],
+          const reversed = positions.edges[u][v].reversed,
+                points = positions.edges[u][v].points,
+                enter = !positions0.edges[u] || !positions0.edges[u][v],
                 points0 = enter
-                  ? (reversed ? [
-                      [positions0.vertices[v] ? positions0.vertices[v].x : positions.vertices[v].x, positions0.vertices[v] ? positions0.vertices[v].y : 0],
-                      [positions0.vertices[v] ? positions0.vertices[v].x : positions.vertices[v].x, positions0.vertices[v] ? positions0.vertices[v].y : 0],
-                      [positions0.vertices[u] ? positions0.vertices[u].x : positions.vertices[u].x, positions0.vertices[u] ? positions0.vertices[u].y : 0],
-                      [positions0.vertices[u] ? positions0.vertices[u].x : positions.vertices[u].x, positions0.vertices[u] ? positions0.vertices[u].y : 0],
-                      [positions0.vertices[u] ? positions0.vertices[u].x : positions.vertices[u].x, positions0.vertices[u] ? positions0.vertices[u].y : 0],
-                      [positions0.vertices[u] ? positions0.vertices[u].x : positions.vertices[u].x, positions0.vertices[u] ? positions0.vertices[u].y : 0]
-                    ] : [
+                  ? [
                       [positions0.vertices[u] ? positions0.vertices[u].x : positions.vertices[u].x, positions0.vertices[u] ? positions0.vertices[u].y : 0],
                       [positions0.vertices[u] ? positions0.vertices[u].x : positions.vertices[u].x, positions0.vertices[u] ? positions0.vertices[u].y : 0],
                       [positions0.vertices[v] ? positions0.vertices[v].x : positions.vertices[v].x, positions0.vertices[v] ? positions0.vertices[v].y : 0],
                       [positions0.vertices[v] ? positions0.vertices[v].x : positions.vertices[v].x, positions0.vertices[v] ? positions0.vertices[v].y : 0],
                       [positions0.vertices[v] ? positions0.vertices[v].x : positions.vertices[v].x, positions0.vertices[v] ? positions0.vertices[v].y : 0],
                       [positions0.vertices[v] ? positions0.vertices[v].x : positions.vertices[v].x, positions0.vertices[v] ? positions0.vertices[v].y : 0]
-                    ])
-                  : (reversed ? positions0.edges[v][u].points : positions0.edges[u][v].points);
+                    ]
+                  : positions0.edges[u][v].points;
           while (points.length < 6) {
             points.push(points[points.length - 1]);
           }
