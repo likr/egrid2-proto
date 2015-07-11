@@ -3,13 +3,19 @@ import {ladderDown, ladderUp, openConstructDialog, selectVertex, updateText} fro
 
 class SvgButton extends React.Component {
   render() {
+    const textStyle = {
+      userSelect: 'none',
+      MozUserSelect: 'none',
+      WebkitUserSelect: 'none',
+      MsUserSelect: 'none'
+    };
     return (
       <g transform={this.props.transform} onClick={this.props.onClick}>
         <rect
             width="24"
             height="24"
             fill="#ccc"/>
-          <text y="24" className="material-icons">{this.props.icon}</text>
+          <text style={textStyle} y="24" className="material-icons">{this.props.icon}</text>
       </g>
     );
   }

@@ -69,8 +69,10 @@ class NetworkDiagram extends React.Component {
     this.dragEnd();
   }
 
-  onMouseMove({clientX, clientY}) {
+  onMouseMove(e) {
+    const {clientX, clientY} = e;
     this.dragMove(clientX, clientY);
+    e.preventDefault();
   }
 
   onTouchStart({touches}) {
@@ -82,9 +84,10 @@ class NetworkDiagram extends React.Component {
     this.dragEnd();
   }
 
-  onTouchMove({touches}) {
-    const {clientX, clientY} = touches[0];
+  onTouchMove(e) {
+    const {clientX, clientY} = e.touches[0];
     this.dragMove(clientX, clientY);
+    e.preventDefault();
   }
 
   onWheel({clientX, clientY, deltaY, target}) {
