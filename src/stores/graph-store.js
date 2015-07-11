@@ -147,7 +147,9 @@ class GraphStore extends EventEmitter {
   handleLadderUp(u, text) {
     const {graph, selected} = privates.get(this);
     const v = findExistingVertex(graph, text);
-    if (v === null) {
+    if (v === u) {
+      return;
+    } else if (v === null) {
       const w = graph.addVertex({
         text
       });
@@ -162,7 +164,9 @@ class GraphStore extends EventEmitter {
   handleLadderDown(u, text) {
     const {graph, selected} = privates.get(this);
     const v = findExistingVertex(graph, text);
-    if (v === null) {
+    if (v === u) {
+      return;
+    } else if (v === null) {
       const w = graph.addVertex({
         text
       });
