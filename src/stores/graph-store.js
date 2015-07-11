@@ -30,7 +30,7 @@ const updateLayout = (that) => {
           const {text} = graph.vertex(u),
                 {x, y} = positions.vertices[u],
                 enter = !positions0.vertices[u],
-                x0 = enter ? 0 : positions0.vertices[u].x,
+                x0 = enter ? positions.vertices[u].x : positions0.vertices[u].x,
                 y0 = enter ? 0 : positions0.vertices[u].y,
                 selected = privates.get(that).selected[u];
           return {u, text, x, y, x0, y0, selected};
@@ -42,8 +42,25 @@ const updateLayout = (that) => {
                   ? !positions0.edges[v] || !positions0.edges[v][u]
                   : !positions0.edges[u] || !positions0.edges[u][v],
                 points0 = enter
-                  ? points.map(() => [0, 0])
+                  ? (reversed ? [
+                      [positions0.vertices[v] ? positions0.vertices[v].x : positions.vertices[v].x, positions0.vertices[v] ? positions0.vertices[v].y : 0],
+                      [positions0.vertices[v] ? positions0.vertices[v].x : positions.vertices[v].x, positions0.vertices[v] ? positions0.vertices[v].y : 0],
+                      [positions0.vertices[u] ? positions0.vertices[u].x : positions.vertices[u].x, positions0.vertices[u] ? positions0.vertices[u].y : 0],
+                      [positions0.vertices[u] ? positions0.vertices[u].x : positions.vertices[u].x, positions0.vertices[u] ? positions0.vertices[u].y : 0],
+                      [positions0.vertices[u] ? positions0.vertices[u].x : positions.vertices[u].x, positions0.vertices[u] ? positions0.vertices[u].y : 0],
+                      [positions0.vertices[u] ? positions0.vertices[u].x : positions.vertices[u].x, positions0.vertices[u] ? positions0.vertices[u].y : 0]
+                    ] : [
+                      [positions0.vertices[u] ? positions0.vertices[u].x : positions.vertices[u].x, positions0.vertices[u] ? positions0.vertices[u].y : 0],
+                      [positions0.vertices[u] ? positions0.vertices[u].x : positions.vertices[u].x, positions0.vertices[u] ? positions0.vertices[u].y : 0],
+                      [positions0.vertices[v] ? positions0.vertices[v].x : positions.vertices[v].x, positions0.vertices[v] ? positions0.vertices[v].y : 0],
+                      [positions0.vertices[v] ? positions0.vertices[v].x : positions.vertices[v].x, positions0.vertices[v] ? positions0.vertices[v].y : 0],
+                      [positions0.vertices[v] ? positions0.vertices[v].x : positions.vertices[v].x, positions0.vertices[v] ? positions0.vertices[v].y : 0],
+                      [positions0.vertices[v] ? positions0.vertices[v].x : positions.vertices[v].x, positions0.vertices[v] ? positions0.vertices[v].y : 0]
+                    ])
                   : (reversed ? positions0.edges[v][u].points : positions0.edges[u][v].points);
+          while (points.length < 6) {
+            points.push(points[points.length - 1]);
+          }
           return {u, v, points, points0, reversed};
         });
   privates.get(that).layout = {vertices, edges};

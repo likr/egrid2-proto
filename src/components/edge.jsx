@@ -34,10 +34,11 @@ class Edge extends React.Component {
   }
 
   render() {
-    const t = this.props.t;
+    const t = this.props.t,
+          n0 = this.props.d.points0.length;
     const points = this.props.d.points.map((point, i) => {
       const [x, y] = point,
-            [x0, y0] = i < this.props.d.points0.length ? this.props.d.points0[i] : point;
+            [x0, y0] = i < n0 ? this.props.d.points0[i] : this.props.d.points0[n0 - 1];
       return [(x - x0) * t + x0, (y - y0) * t + y0];
     });
     return (
