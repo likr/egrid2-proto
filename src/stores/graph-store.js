@@ -2,9 +2,10 @@ import {EventEmitter} from 'events';
 import Graph from 'eg-graph/lib/graph';
 import Layouter from 'eg-graph/lib/layouter/sugiyama';
 import AppDispatcher from '../app-dispatcher';
+import measureText from '../utils/measure-text';
 
 const layouter = new Layouter()
-  .layerMargin(150)
+  .layerMargin(50)
   .vertexMargin(10)
   .vertexBottomMargin(() => 30)
   .vertexWidth(() => 10)
@@ -20,11 +21,22 @@ const findExistingVertex = (graph, text) => {
   return null;
 };
 
+const calcSizes = (graph) => {
+  const sizes = measureText(graph.vertices().map((u) => graph.vertex(u).text)),
+        result = {};
+  graph.vertices().forEach((u, i) => {
+    result[u] = sizes[i];
+  });
+  return result;
+};
+
 const privates = new WeakMap();
 
 const updateLayout = (that) => {
   const {graph} = privates.get(that),
-        positions = layouter.layout(graph),
+        sizes = calcSizes(graph);
+  layouter.vertexRightMargin(({u}) => sizes[u].width);
+  const positions = layouter.layout(graph),
         positions0 = privates.get(that).positions,
         vertices = graph.vertices().map((u) => {
           const {text} = graph.vertex(u),
@@ -56,6 +68,7 @@ const updateLayout = (that) => {
         });
   privates.get(that).layout = {vertices, edges};
   privates.get(that).positions = positions;
+  console.log();
 
   that.emit('change');
 };
