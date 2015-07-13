@@ -13,6 +13,7 @@ const measureText = (texts) => {
     result.push({width, height});
   }
 
+  bodyElement.removeChild(svgElement);
   return result;
 };
 
