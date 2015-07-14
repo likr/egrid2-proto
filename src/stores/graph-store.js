@@ -6,7 +6,7 @@ import measureText from '../utils/measure-text';
 
 const layouter = new Layouter()
   .layerMargin(5)
-  .vertexMargin(5)
+  .vertexMargin(10)
   .edgeMargin(5)
   .vertexWidth(() => 10)
   .vertexHeight(() => 10)
