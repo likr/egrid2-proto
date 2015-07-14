@@ -25,30 +25,45 @@ const svgPath = (points, ltor) => {
 };
 
 class Edge extends React.Component {
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      t: 0
-    };
+  shouldComponentUpdate(nextProps) {
+    if (this.props.t !== nextProps.t) {
+      return true;
+    }
+    if (this.props.selected !== nextProps.selected) {
+      return true;
+    }
+    const pointsChanged = this.props.points.some(([x, y], i) => {
+      const [x0, y0] = nextProps.points[i];
+      return x !== x0 || y !== y0;
+    });
+    if (pointsChanged) {
+      return true;
+    }
+    const points0Changed = this.props.points0.some(([x, y], i) => {
+      const [x0, y0] = nextProps.points0[i];
+      return x !== x0 || y !== y0;
+    });
+    if (points0Changed) {
+      return true;
+    }
+    return false;
   }
 
   render() {
-    const t = this.props.t,
-          n0 = this.props.d.points0.length;
-    const points = this.props.d.points.map((point, i) => {
+    const t = this.props.t;
+    const points = this.props.points.map((point, i) => {
       const [x, y] = point,
-            [x0, y0] = i < n0 ? this.props.d.points0[i] : this.props.d.points0[n0 - 1];
+            [x0, y0] = this.props.points0[i];
       return [(x - x0) * t + x0, (y - y0) * t + y0];
     });
-    const edgeColor = this.props.d.selected ? '#ffc0cb' : '#eee';
+    const edgeColor = this.props.selected ? '#ffc0cb' : '#eee';
     return (
       <g className="edge">
         <path
             d={svgPath(points, true)}
             fill="none"
             stroke={edgeColor}
-            strokeDasharray={this.props.d.reversed ? 5 : 'none'}
+            strokeDasharray={this.props.reversed ? 5 : 'none'}
             strokeWidth="3"
         />
       </g>

@@ -106,10 +106,29 @@ class NetworkDiagram extends React.Component {
     const {layout} = this.props,
           {t} = this.state;
     const vertices = layout.vertices.map((d) => {
-      return <Vertex key={d.u} t={t} d={d}/>;
+      return (
+        <Vertex
+            key={d.u}
+            u={d.u}
+            text={d.text}
+            t={t}
+            x={d.x}
+            y={d.y}
+            x0={d.x0}
+            y0={d.y0}
+            selected={d.selected}/>
+      );
     });
     const edges = layout.edges.map((d) => {
-      return <Edge key={`${d.u}:${d.v}`} t={t} d={d}/>;
+      return (
+        <Edge
+            key={`${d.u}:${d.v}`}
+            t={t}
+            points={d.points}
+            points0={d.points0}
+            reversed={d.reversed}
+            selected={d.selected}/>
+      );
     });
 
     const svgTransform = `translate(${this.state.zoomX},${this.state.zoomY})scale(${this.state.zoomScale})`;

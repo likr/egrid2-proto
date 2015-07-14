@@ -51,7 +51,7 @@ const updateLayout = (that) => {
                 enter = !positions0.vertices[u],
                 x0 = enter ? positions.vertices[u].x : positions0.vertices[u].x,
                 y0 = enter ? 0 : positions0.vertices[u].y,
-                selected = privates.get(that).selected[u];
+                selected = privates.get(that).selected[u] || false;
           return {u, text, x, y, x0, y0, selected};
         }),
         edges = graph.edges().map(([u, v]) => {
