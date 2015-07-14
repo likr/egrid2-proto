@@ -24,12 +24,28 @@ const svgPath = (points, ltor) => {
   return d;
 };
 
+const edgeColor = (upper, lower) => {
+  if (upper && lower) {
+    return '#dda0dd';
+  }
+  if (upper) {
+    return '#00bfff';
+  }
+  if (lower) {
+    return '#ffc0cb';
+  }
+  return '#eee';
+};
+
 class Edge extends React.Component {
   shouldComponentUpdate(nextProps) {
     if (this.props.t !== nextProps.t) {
       return true;
     }
-    if (this.props.selected !== nextProps.selected) {
+    if (this.props.upper !== nextProps.upper) {
+      return true;
+    }
+    if (this.props.lower !== nextProps.lower) {
       return true;
     }
     const pointsChanged = this.props.points.some(([x, y], i) => {
@@ -56,13 +72,12 @@ class Edge extends React.Component {
             [x0, y0] = this.props.points0[i];
       return [(x - x0) * t + x0, (y - y0) * t + y0];
     });
-    const edgeColor = this.props.selected ? '#ffc0cb' : '#eee';
     return (
       <g className="edge">
         <path
             d={svgPath(points, true)}
             fill="none"
-            stroke={edgeColor}
+            stroke={edgeColor(this.props.upper, this.props.lower)}
             strokeDasharray={this.props.reversed ? 5 : 'none'}
             strokeWidth="3"
         />

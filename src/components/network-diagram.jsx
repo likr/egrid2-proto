@@ -127,7 +127,8 @@ class NetworkDiagram extends React.Component {
             points={d.points}
             points0={d.points0}
             reversed={d.reversed}
-            selected={d.selected}/>
+            upper={d.upper}
+            lower={d.lower}/>
       );
     });
 

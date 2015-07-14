@@ -57,7 +57,8 @@ const updateLayout = (that) => {
         edges = graph.edges().map(([u, v]) => {
           const reversed = positions.edges[u][v].reversed,
                 points = positions.edges[u][v].points,
-                selected = privates.get(that).selected[u] || privates.get(that).selected[v],
+                upper = privates.get(that).selected[v],
+                lower = privates.get(that).selected[u],
                 enter = !positions0.edges[u] || !positions0.edges[u][v],
                 points0 = enter
                   ? [
@@ -72,7 +73,7 @@ const updateLayout = (that) => {
           while (points.length < 6) {
             points.push(points[points.length - 1]);
           }
-          return {u, v, points, points0, reversed, selected};
+          return {u, v, points, points0, reversed, upper, lower};
         });
   privates.get(that).layout = {vertices, edges};
   privates.get(that).positions = positions;
@@ -86,7 +87,8 @@ const updateSelection = (that) => {
     d.selected = selected[d.u];
   }
   for (const d of layout.edges) {
-    d.selected = selected[d.u] || selected[d.v];
+    d.upper = selected[d.v];
+    d.lower = selected[d.u];
   }
   that.emit('change');
 };
