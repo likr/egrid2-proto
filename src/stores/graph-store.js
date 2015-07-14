@@ -5,9 +5,9 @@ import AppDispatcher from '../app-dispatcher';
 import measureText from '../utils/measure-text';
 
 const layouter = new Layouter()
-  .layerMargin(50)
-  .vertexMargin(10)
-  .vertexBottomMargin(() => 30)
+  .layerMargin(5)
+  .vertexMargin(5)
+  .edgeMargin(5)
   .vertexWidth(() => 10)
   .vertexHeight(() => 10)
   .edgeWidth(() => 1);
@@ -21,8 +21,15 @@ const findExistingVertex = (graph, text) => {
   return null;
 };
 
+const cutoff = (text) => {
+  if (text.length > 10) {
+    return text.substr(0, 9) + '...';
+  }
+  return text;
+};
+
 const calcSizes = (graph) => {
-  const sizes = measureText(graph.vertices().map((u) => graph.vertex(u).text)),
+  const sizes = measureText(graph.vertices().map((u) => cutoff(graph.vertex(u).text))),
         result = {};
   graph.vertices().forEach((u, i) => {
     result[u] = sizes[i];
@@ -50,6 +57,7 @@ const updateLayout = (that) => {
         edges = graph.edges().map(([u, v]) => {
           const reversed = positions.edges[u][v].reversed,
                 points = positions.edges[u][v].points,
+                selected = privates.get(that).selected[u] || privates.get(that).selected[v],
                 enter = !positions0.edges[u] || !positions0.edges[u][v],
                 points0 = enter
                   ? [
@@ -64,11 +72,10 @@ const updateLayout = (that) => {
           while (points.length < 6) {
             points.push(points[points.length - 1]);
           }
-          return {u, v, points, points0, reversed};
+          return {u, v, points, points0, reversed, selected};
         });
   privates.get(that).layout = {vertices, edges};
   privates.get(that).positions = positions;
-  console.log();
 
   that.emit('change');
 };
@@ -77,6 +84,9 @@ const updateSelection = (that) => {
   const {selected, layout} = privates.get(that);
   for (const d of layout.vertices) {
     d.selected = selected[d.u];
+  }
+  for (const d of layout.edges) {
+    d.selected = selected[d.u] || selected[d.v];
   }
   that.emit('change');
 };

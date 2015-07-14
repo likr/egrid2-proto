@@ -66,12 +66,7 @@ class Vertex extends React.Component {
     return (
       <g className="vertex" style={style} transform={`translate(${x},${y})`}>
         <circle r="5" fill={color} onClick={this.handleClick.bind(this)}/>
-        <text style={textStyle} x="7" y="5" fill={color} onClick={this.handleClick.bind(this)}>{this.props.d.text}</text>
-        <g className="buttons" transform="translate(-42,0)">
-          <SvgButton transform="translate(0,10)" icon="arrow_back" onClick={this.handleClickLadderUpButton.bind(this)}/>
-          <SvgButton transform="translate(30,10)" icon="edit" onClick={this.handleClickEditButton.bind(this)}/>
-          <SvgButton transform="translate(60,10)" icon="arrow_forward" onClick={this.handleClickLadderDownButton.bind(this)}/>
-        </g>
+        <text style={textStyle} x="7" y="5" fill={color} fontSize="10pt" onClick={this.handleClick.bind(this)}>{this.props.d.text}</text>
       </g>
     );
   }

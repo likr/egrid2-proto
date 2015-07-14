@@ -92,7 +92,7 @@ class NetworkDiagram extends React.Component {
 
   onWheel({clientX, clientY, deltaY, target}) {
     const zoomFactor = 0.9,
-          scale = Math.max(0.1, Math.min(2, deltaY > 0
+          scale = Math.max(0.1, Math.min(2, deltaY < 0
             ? this.state.zoomScale / zoomFactor
             : this.state.zoomScale * zoomFactor));
     this.setState({

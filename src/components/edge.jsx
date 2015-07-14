@@ -41,12 +41,13 @@ class Edge extends React.Component {
             [x0, y0] = i < n0 ? this.props.d.points0[i] : this.props.d.points0[n0 - 1];
       return [(x - x0) * t + x0, (y - y0) * t + y0];
     });
+    const edgeColor = this.props.d.selected ? '#ffc0cb' : '#eee';
     return (
       <g className="edge">
         <path
             d={svgPath(points, true)}
             fill="none"
-            stroke="#ccc"
+            stroke={edgeColor}
             strokeDasharray={this.props.d.reversed ? 5 : 'none'}
             strokeWidth="3"
         />

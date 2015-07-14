@@ -60,21 +60,11 @@ class Main extends React.Component {
       left: 0,
       right: 0
     };
-    const buttonsStyle = {
-      position: 'absolute',
-      left: 10,
-      bottom: 10
-    };
     return (
       <div>
         <div style={wrapperStyle}>
           <NetworkDiagram layout={this.state.layout}/>
         </div>
-        <div style={buttonsStyle}>
-          <AddConstructButton/>
-          <RemoveSelectedConstructsButton/>
-        </div>
-        <ConstructDialog/>
       </div>
     );
   }
