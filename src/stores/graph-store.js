@@ -59,16 +59,15 @@ const updateLayout = (that) => {
                 points = positions.edges[u][v].points,
                 upper = privates.get(that).selected[v],
                 lower = privates.get(that).selected[u],
-                enter = !positions0.edges[u] || !positions0.edges[u][v],
+                uEnter = !positions0.vertices[u],
+                vEnter = !positions0.vertices[v],
+                enter = uEnter || vEnter,
+                ux0 = uEnter ? positions.vertices[u].x : positions0.vertices[u].x,
+                uy0 = uEnter ? 0 : positions0.vertices[u].y,
+                vx0 = vEnter ? positions.vertices[v].x : positions0.vertices[v].x,
+                vy0 = vEnter ? 0 : positions0.vertices[v].y,
                 points0 = enter
-                  ? [
-                      [positions0.vertices[u] ? positions0.vertices[u].x : positions.vertices[u].x, positions0.vertices[u] ? positions0.vertices[u].y : 0],
-                      [positions0.vertices[u] ? positions0.vertices[u].x : positions.vertices[u].x, positions0.vertices[u] ? positions0.vertices[u].y : 0],
-                      [positions0.vertices[v] ? positions0.vertices[v].x : positions.vertices[v].x, positions0.vertices[v] ? positions0.vertices[v].y : 0],
-                      [positions0.vertices[v] ? positions0.vertices[v].x : positions.vertices[v].x, positions0.vertices[v] ? positions0.vertices[v].y : 0],
-                      [positions0.vertices[v] ? positions0.vertices[v].x : positions.vertices[v].x, positions0.vertices[v] ? positions0.vertices[v].y : 0],
-                      [positions0.vertices[v] ? positions0.vertices[v].x : positions.vertices[v].x, positions0.vertices[v] ? positions0.vertices[v].y : 0]
-                    ]
+                  ? [[ux0, uy0], [ux0, uy0], [vx0, vy0], [vx0, vy0], [vx0, vy0], [vx0, vy0]]
                   : positions0.edges[u][v].points;
           while (points.length < 6) {
             points.push(points[points.length - 1]);
@@ -99,6 +98,7 @@ class GraphStore extends EventEmitter {
 
     privates.set(this, {
       graph: new Graph(),
+      boxLayout: false,
       selected: {},
       positions: {
         vertices: {},
