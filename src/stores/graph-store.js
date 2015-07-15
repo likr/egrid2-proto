@@ -5,11 +5,9 @@ import AppDispatcher from '../app-dispatcher';
 import measureText from '../utils/measure-text';
 
 const layouter = new Layouter()
-  .layerMargin(5)
-  .vertexMargin(10)
+  .layerMargin(30)
+  .vertexMargin(5)
   .edgeMargin(5)
-  .vertexWidth(() => 10)
-  .vertexHeight(() => 10)
   .edgeWidth(() => 1);
 
 const findExistingVertex = (graph, text) => {
@@ -40,19 +38,31 @@ const calcSizes = (graph) => {
 const privates = new WeakMap();
 
 const updateLayout = (that) => {
-  const {graph} = privates.get(that),
+  const {graph, boxLayout} = privates.get(that),
         sizes = calcSizes(graph);
-  layouter.vertexRightMargin(({u}) => sizes[u].width);
+
+  if (boxLayout) {
+    layouter
+      .vertexWidth(({u}) => sizes[u].width + 10)
+      .vertexHeight(({u}) => sizes[u].height + 10)
+      .vertexRightMargin(() => 0);
+  } else {
+    layouter
+      .vertexWidth(() => 10)
+      .vertexHeight(() => 10)
+      .vertexRightMargin(({u}) => sizes[u].width);
+  }
+
   const positions = layouter.layout(graph),
         positions0 = privates.get(that).positions,
         vertices = graph.vertices().map((u) => {
-          const {text} = graph.vertex(u),
-                {x, y} = positions.vertices[u],
+          const text = cutoff(graph.vertex(u).text),
+                {x, y, width, height} = positions.vertices[u],
                 enter = !positions0.vertices[u],
                 x0 = enter ? positions.vertices[u].x : positions0.vertices[u].x,
                 y0 = enter ? 0 : positions0.vertices[u].y,
                 selected = privates.get(that).selected[u] || false;
-          return {u, text, x, y, x0, y0, selected};
+          return {u, text, x, y, x0, y0, width, height, selected};
         }),
         edges = graph.edges().map(([u, v]) => {
           const reversed = positions.edges[u][v].reversed,
@@ -74,7 +84,7 @@ const updateLayout = (that) => {
           }
           return {u, v, points, points0, reversed, upper, lower};
         });
-  privates.get(that).layout = {vertices, edges};
+  privates.get(that).layout = {vertices, edges, boxLayout};
   privates.get(that).positions = positions;
 
   that.emit('change');

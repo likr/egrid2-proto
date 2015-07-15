@@ -9,7 +9,7 @@ const measureText = (texts) => {
   bodyElement.appendChild(svgElement);
 
   for (const text of texts) {
-    textElement.innerHTML = text;
+    textElement.textContent = text;
     const {width, height} = textElement.getBBox();
     result.push({width, height});
   }

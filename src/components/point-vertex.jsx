@@ -1,9 +1,9 @@
 import React from 'react';
-import {ladderDown, ladderUp, openConstructDialog, selectVertex, updateText} from '../app-actions';
+import {selectVertex} from '../app-actions';
 
-class Vertex extends React.Component {
+class PointVertex extends React.Component {
   shouldComponentUpdate(nextProps) {
-    const attrs = ['t', 'selected', 'x', 'y', 'x0', 'y0', 'text'];
+    const attrs = ['t', 'color', 'x', 'y', 'x0', 'y0', 'text'];
     for (const attr of attrs) {
       if (this.props[attr] !== nextProps[attr]) {
         return true;
@@ -17,10 +17,9 @@ class Vertex extends React.Component {
   }
 
   render() {
-    const {t, x0, y0} = this.props;
+    const {t, x0, y0, color} = this.props;
     const x = (this.props.x - x0) * t + x0,
-          y = (this.props.y - y0) * t + y0,
-          color = this.props.selected ? 'red' : 'black';
+          y = (this.props.y - y0) * t + y0;
     const style = {
       cursor: 'pointer'
     };
@@ -39,4 +38,4 @@ class Vertex extends React.Component {
   }
 }
 
-export default Vertex;
+export default PointVertex;
