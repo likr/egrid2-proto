@@ -34,7 +34,7 @@ class Main extends React.Component {
       layerMargin: +query.layerMargin
     });
 
-    fetch('data/pencil.json')
+    fetch('data/univ.json')
       .then((response) => response.json())
       .then(loadGraph);
 
