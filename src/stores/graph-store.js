@@ -2,11 +2,12 @@ import {EventEmitter} from 'events';
 import Graph from 'eg-graph/lib/graph';
 import Layouter from 'eg-graph/lib/layouter/sugiyama';
 import AppDispatcher from '../app-dispatcher';
+import cutoff from '../utils/cutoff';
 import measureText from '../utils/measure-text';
 
 const layouter = new Layouter()
   .vertexMargin(5)
-  .edgeMargin(5)
+  .edgeMargin(2)
   .edgeWidth(() => 1);
 
 const findExistingVertex = (graph, text) => {
@@ -16,13 +17,6 @@ const findExistingVertex = (graph, text) => {
     }
   }
   return null;
-};
-
-const cutoff = (text) => {
-  if (text.length > 10) {
-    return text.substr(0, 9) + '...';
-  }
-  return text;
 };
 
 const calcSizes = (graph) => {
@@ -44,8 +38,8 @@ const updateLayout = (that) => {
   layouter.layerMargin(layerMargin);
   if (boxLayout) {
     layouter
-      .vertexWidth(({u}) => sizes[u].width + 10)
-      .vertexHeight(({u}) => sizes[u].height + 10)
+      .vertexWidth(({u}) => sizes[u].width)
+      .vertexHeight(({u}) => sizes[u].height)
       .vertexRightMargin(() => 0);
   } else {
     layouter
@@ -59,11 +53,12 @@ const updateLayout = (that) => {
         vertices = graph.vertices().map((u) => {
           const text = cutoff(graph.vertex(u).text),
                 {x, y, width, height} = positions.vertices[u],
+                rightMargin = layouter.vertexRightMargin()({u}),
                 enter = !positions0.vertices[u],
                 x0 = enter ? positions.vertices[u].x : positions0.vertices[u].x,
                 y0 = enter ? 0 : positions0.vertices[u].y,
                 selected = privates.get(that).selected[u] || false;
-          return {u, text, x, y, x0, y0, width, height, selected};
+          return {u, text, x, y, x0, y0, width, height, rightMargin, selected};
         }),
         edges = graph.edges().map(([u, v]) => {
           const reversed = positions.edges[u][v].reversed,
@@ -141,9 +136,9 @@ class GraphStore extends EventEmitter {
         case 'remove-selected-constructs':
           this.handleRemoveSelectedConstructs();
           break;
-        case 'select-vertex':
-          this.handleSelectVertex(payload.u);
-          break;
+        // case 'select-vertex':
+        //   this.handleSelectVertex(payload.u);
+        //   break;
         case 'set-layout-options':
           this.handleSetLayoutOptions(payload.options);
           break;

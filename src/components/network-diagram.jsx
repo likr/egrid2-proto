@@ -6,6 +6,15 @@ import PointVertex from './point-vertex';
 import BoxVertex from './box-vertex';
 import Edge from './edge';
 
+const totalWidth = (layout) => {
+  let left = 0, right = 0;
+  for (const vertex of layout.vertices) {
+    left = Math.min(left, vertex.x - vertex.width / 2);
+    right = Math.max(right, vertex.x + vertex.width / 2 + vertex.rightMargin);
+  }
+  return right - left;
+};
+
 const edgeColor = (upper, lower, boxLayout) => {
   if (boxLayout) {
     if (upper && lower) {
@@ -28,7 +37,7 @@ const edgeColor = (upper, lower, boxLayout) => {
     if (lower) {
       return '#ffc0cb';
     }
-    return '#eee';
+    return '#bbb';
   }
 };
 
@@ -41,16 +50,18 @@ class NetworkDiagram extends React.Component {
       x0: 0,
       y0: 0,
       draggin: false,
-      zoomX: 50,
-      zoomY: 50,
-      zoomScale: 0.25
+      zoomX: 0,
+      zoomY: 0,
+      zoomScale: 1
     };
   }
 
   componentWillReceiveProps(nextProps) {
     if (this.props.layout !== nextProps.layout) {
+      const screenWidth = React.findDOMNode(this).parentNode.clientWidth;
       this.setState({
-        t: 0
+        t: 0,
+        zoomScale: Math.min(1, screenWidth / totalWidth(nextProps.layout))
       });
     }
   }
@@ -202,14 +213,7 @@ class NetworkDiagram extends React.Component {
     };
     return (
       <svg width="100%" height="100%"
-          style={svgStyle}
-          onMouseDown={this.onMouseDown.bind(this)}
-          onMouseUp={this.onMouseUp.bind(this)}
-          onMouseMove={this.onMouseMove.bind(this)}
-          onTouchStart={this.onTouchStart.bind(this)}
-          onTouchEnd={this.onTouchEnd.bind(this)}
-          onTouchMove={this.onTouchMove.bind(this)}
-          onWheel={this.onWheel.bind(this)}>
+          style={svgStyle}>
         <g className="contents" transform={svgTransform}>
           <g className="edges">
             {edges}

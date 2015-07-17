@@ -34,7 +34,7 @@ class BoxVertex extends React.Component {
         <rect
             x={-width / 2}
             y={-height / 2}
-            rx="5"
+            rx="0"
             width={width}
             height={height}
             fill="none"

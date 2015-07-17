@@ -32,7 +32,7 @@ class PointVertex extends React.Component {
     return (
       <g className="vertex" style={style} transform={`translate(${x},${y})`}>
         <circle r="5" fill={color} onClick={this.handleClick.bind(this)}/>
-        <text style={textStyle} x="7" y="5" fontSize="10pt" onClick={this.handleClick.bind(this)}>{this.props.text}</text>
+        <text style={textStyle} x="7" y="6" fontSize="10pt" onClick={this.handleClick.bind(this)}>{this.props.text}</text>
       </g>
     );
   }
