@@ -1,13 +1,12 @@
-/* global fetch */
+/* global location,fetch */
 import 'whatwg-fetch';
+import {parse} from 'querystring';
 import React from 'react';
-import {Styles} from 'material-ui';
+import {Styles, FlatButton} from 'material-ui';
 import GraphStore from '../stores/graph-store';
-import {loadGraph} from '../app-actions';
-import AddConstructButton from './add-construct-button';
-import ConstructDialog from './construct-dialog';
+import {loadGraph, setLayoutOptions} from '../app-actions';
 import NetworkDiagram from './network-diagram';
-import RemoveSelectedConstructsButton from './remove-selected-constructs-button';
+import LayoutOptionsForm from './layout-options-form';
 
 const ThemeManager = new Styles.ThemeManager();
 
@@ -21,6 +20,16 @@ class Main extends React.Component {
   }
 
   componentDidMount() {
+    const query = {
+      boxLayout: false,
+      layerMargin: 30
+    };
+    Object.assign(query, parse(location.search.substr(1)));
+    console.log(query);
+    setLayoutOptions({
+      boxLayout: !!(+query.box),
+      layerMargin: +query.layerMargin
+    });
     fetch('data/graph.json')
       .then((response) => response.json())
       .then(loadGraph);
@@ -37,7 +46,7 @@ class Main extends React.Component {
   }
 
   componentWillUnmount() {
-    GraphStore.removeChangeListener(this.onChangeGraph.bind(this));
+    GraphStore.removeChangeListener(this.handleChangeLayout.bind(this));
   }
 
   handleChangeLayout() {
@@ -53,16 +62,13 @@ class Main extends React.Component {
   }
 
   render() {
-    const wrapperStyle = {
-      position: 'absolute',
-      top: 0,
-      bottom: '10px',
-      left: 0,
-      right: 0
-    };
     return (
-      <div>
-        <div style={wrapperStyle}>
+      <div style={{width: '1024px', marginLeft: 'auto', marginRight: 'auto'}}>
+        <FlatButton label="Box - Short" linkButton={true} href="?layerMargin=30&box=1"/>
+        <FlatButton label="Box - Long" linkButton={true} href="?layerMargin=150&box=1"/>
+        <FlatButton label="Point - Short" linkButton={true} href="?layerMargin=30&box=0"/>
+        <FlatButton label="Point - Long" linkButton={true} href="?layerMargin=150&box=0"/>
+        <div style={{width: '100%', height: '800px'}}>
           <NetworkDiagram layout={this.state.layout}/>
         </div>
       </div>

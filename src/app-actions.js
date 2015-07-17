@@ -52,6 +52,13 @@ const selectVertex = (u) => {
   });
 };
 
+const setLayoutOptions = (options) => {
+  AppDispatcher.dispatch({
+    actionType: 'set-layout-options',
+    options
+  });
+};
+
 const updateText = (u, text) => {
   AppDispatcher.dispatch({
     actionType: 'update-text',
@@ -68,6 +75,7 @@ const AppActions = {
   openConstructDialog,
   removeSelectedConstructs,
   selectVertex,
+  setLayoutOptions,
   updateText
 };
 

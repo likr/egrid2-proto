@@ -5,7 +5,6 @@ import AppDispatcher from '../app-dispatcher';
 import measureText from '../utils/measure-text';
 
 const layouter = new Layouter()
-  .layerMargin(30)
   .vertexMargin(5)
   .edgeMargin(5)
   .edgeWidth(() => 1);
@@ -38,9 +37,11 @@ const calcSizes = (graph) => {
 const privates = new WeakMap();
 
 const updateLayout = (that) => {
-  const {graph, boxLayout} = privates.get(that),
+  const {graph, layoutOptions} = privates.get(that),
+        {boxLayout, layerMargin} = layoutOptions,
         sizes = calcSizes(graph);
 
+  layouter.layerMargin(layerMargin);
   if (boxLayout) {
     layouter
       .vertexWidth(({u}) => sizes[u].width + 10)
@@ -108,7 +109,10 @@ class GraphStore extends EventEmitter {
 
     privates.set(this, {
       graph: new Graph(),
-      boxLayout: false,
+      layoutOptions: {
+        boxLayout: false,
+        layerMargin: 30
+      },
       selected: {},
       positions: {
         vertices: {},
@@ -122,26 +126,29 @@ class GraphStore extends EventEmitter {
 
     AppDispatcher.register((payload) => {
       switch (payload.actionType) {
-        case 'load-graph':
-          this.handleLoadGraph(payload.data);
-          break;
         case 'add-construct':
           this.handleAddConstruct(payload.text);
-          break;
-        case 'ladder-up':
-          this.handleLadderUp(payload.u, payload.text);
           break;
         case 'ladder-down':
           this.handleLadderDown(payload.u, payload.text);
           break;
-        case 'update-text':
-          this.handleUpdateText(payload.u, payload.text);
+        case 'ladder-up':
+          this.handleLadderUp(payload.u, payload.text);
+          break;
+        case 'load-graph':
+          this.handleLoadGraph(payload.data);
+          break;
+        case 'remove-selected-constructs':
+          this.handleRemoveSelectedConstructs();
           break;
         case 'select-vertex':
           this.handleSelectVertex(payload.u);
           break;
-        case 'remove-selected-constructs':
-          this.handleRemoveSelectedConstructs();
+        case 'set-layout-options':
+          this.handleSetLayoutOptions(payload.options);
+          break;
+        case 'update-text':
+          this.handleUpdateText(payload.u, payload.text);
           break;
       }
     });
@@ -218,6 +225,11 @@ class GraphStore extends EventEmitter {
     const {selected} = privates.get(this);
     selected[u] = !selected[u];
     updateSelection(this);
+  }
+
+  handleSetLayoutOptions(options) {
+    Object.assign(privates.get(this).layoutOptions, options);
+    updateLayout(this);
   }
 
   handleUpdateText(u, text) {
