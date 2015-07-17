@@ -166,6 +166,21 @@ class NetworkDiagram extends React.Component {
         );
       }
     });
+    layout.edges.sort((d1, d2) => {
+      const priority = (upper, lower) => {
+        if (upper && lower) {
+          return 3;
+        }
+        if (upper) {
+          return 2;
+        }
+        if (lower) {
+          return 1;
+        }
+        return 0;
+      };
+      return priority(d1.upper, d1.lower) - priority(d2.upper, d2.lower);
+    });
     const edges = layout.edges.map((d) => {
       const color = edgeColor(d.upper, d.lower, layout.boxLayout),
             edgeWidth = layout.boxLayout ? 1 : 3;
