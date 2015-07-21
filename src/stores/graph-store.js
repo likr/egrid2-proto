@@ -6,9 +6,8 @@ import cutoff from '../utils/cutoff';
 import measureText from '../utils/measure-text';
 
 const layouter = new Layouter()
-  .vertexMargin(5)
-  .edgeMargin(2)
-  .edgeWidth(() => 1);
+  .vertexMargin(3)
+  .edgeMargin(3);
 
 const findExistingVertex = (graph, text) => {
   for (const u of graph.vertices()) {
@@ -38,14 +37,16 @@ const updateLayout = (that) => {
   layouter.layerMargin(layerMargin);
   if (boxLayout) {
     layouter
-      .vertexWidth(({u}) => sizes[u].width)
+      .vertexWidth(({u}) => 150)
       .vertexHeight(({u}) => sizes[u].height)
-      .vertexRightMargin(() => 0);
+      .vertexRightMargin(() => 0)
+      .edgeWidth(() => 1);
   } else {
     layouter
       .vertexWidth(() => 10)
       .vertexHeight(() => 10)
-      .vertexRightMargin(({u}) => sizes[u].width);
+      .vertexRightMargin(() => 140)
+      .edgeWidth(() => 3);
   }
 
   const positions = layouter.layout(graph),
@@ -80,7 +81,22 @@ const updateLayout = (that) => {
           }
           return {u, v, points, points0, reversed, upper, lower};
         });
-  privates.get(that).layout = {vertices, edges, boxLayout};
+  edges.sort((d1, d2) => {
+    const priority = (upper, lower) => {
+      if (upper && lower) {
+        return 3;
+      }
+      if (upper) {
+        return 2;
+      }
+      if (lower) {
+        return 1;
+      }
+      return 0;
+    };
+    return priority(d1.upper, d1.lower) - priority(d2.upper, d2.lower);
+  });
+  privates.get(that).layout = {vertices, edges};
   privates.get(that).positions = positions;
 
   that.emit('change');
@@ -235,6 +251,14 @@ class GraphStore extends EventEmitter {
 
   getLayout() {
     return privates.get(this).layout;
+  }
+
+  getLayerMargin() {
+    return privates.get(this).layoutOptions.layerMargin;
+  }
+
+  getLayoutType() {
+    return privates.get(this).layoutOptions.boxLayout ? 'box' : 'point';
   }
 
   addChangeListener(callback) {

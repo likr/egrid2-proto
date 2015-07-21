@@ -2,6 +2,7 @@ import React from 'react';
 import mixin from 'react-mixin';
 import Graph from 'eg-graph/lib/graph';
 import Animate from '../react-animate';
+import GraphStore from '../stores/graph-store';
 import PointVertex from './point-vertex';
 import BoxVertex from './box-vertex';
 import Edge from './edge';
@@ -46,7 +47,7 @@ class NetworkDiagram extends React.Component {
     super(props);
 
     this.state = {
-      t: 0,
+      t: 1,
       x0: 0,
       y0: 0,
       draggin: false,
@@ -56,19 +57,19 @@ class NetworkDiagram extends React.Component {
     };
   }
 
+  componentDidMount() {
+    const screenWidth = React.findDOMNode(this).parentNode.clientWidth;
+    this.setState({
+      zoomScale: screenWidth / totalWidth(this.props.layout)
+    });
+  }
+
   componentWillReceiveProps(nextProps) {
     if (this.props.layout !== nextProps.layout) {
       const screenWidth = React.findDOMNode(this).parentNode.clientWidth;
       this.setState({
-        t: 0,
-        zoomScale: Math.min(1, screenWidth / totalWidth(nextProps.layout))
+        zoomScale: screenWidth / totalWidth(nextProps.layout)
       });
-    }
-  }
-
-  componentDidUpdate(prevProps) {
-    if (this.props.layout !== prevProps.layout) {
-      this.animate({t: 1}, 1000);
     }
   }
 
@@ -144,10 +145,11 @@ class NetworkDiagram extends React.Component {
 
   render() {
     const {layout} = this.props,
-          {t} = this.state;
+          {t} = this.state,
+          boxLayout = GraphStore.getLayoutType() === 'box';
     const vertices = layout.vertices.map((d) => {
       const color = d.selected ? 'red' : 'black';
-      if (layout.boxLayout) {
+      if (boxLayout) {
         return (
           <BoxVertex
               key={d.u}
@@ -177,24 +179,9 @@ class NetworkDiagram extends React.Component {
         );
       }
     });
-    layout.edges.sort((d1, d2) => {
-      const priority = (upper, lower) => {
-        if (upper && lower) {
-          return 3;
-        }
-        if (upper) {
-          return 2;
-        }
-        if (lower) {
-          return 1;
-        }
-        return 0;
-      };
-      return priority(d1.upper, d1.lower) - priority(d2.upper, d2.lower);
-    });
     const edges = layout.edges.map((d) => {
-      const color = edgeColor(d.upper, d.lower, layout.boxLayout),
-            edgeWidth = layout.boxLayout ? 1 : 3;
+      const color = edgeColor(d.upper, d.lower, boxLayout),
+            edgeWidth = boxLayout ? 1 : 3;
       return (
         <Edge
             key={`${d.u}:${d.v}`}

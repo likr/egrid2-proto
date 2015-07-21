@@ -59,6 +59,12 @@ const setLayoutOptions = (options) => {
   });
 };
 
+const startExperiment = () => {
+  AppDispatcher.dispatch({
+    actionType: 'start-experiment'
+  });
+};
+
 const updateText = (u, text) => {
   AppDispatcher.dispatch({
     actionType: 'update-text',
@@ -76,6 +82,7 @@ const AppActions = {
   removeSelectedConstructs,
   selectVertex,
   setLayoutOptions,
+  startExperiment,
   updateText
 };
 

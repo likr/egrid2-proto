@@ -15,6 +15,9 @@ class ExperimentStore extends EventEmitter {
     super();
 
     privates.set(this, {
+      started: false,
+      finished: false,
+      startedTime: null,
       problemCount: 0,
       correctCount: 0,
       graph: new Graph(),
@@ -28,6 +31,9 @@ class ExperimentStore extends EventEmitter {
           break;
         case 'select-vertex':
           this.handleSelectVertex(payload.u);
+          break;
+        case 'start-experiment':
+          this.handleStartExperiment();
           break;
       }
     });
@@ -56,6 +62,20 @@ class ExperimentStore extends EventEmitter {
     this.emit('update');
   }
 
+  handleStartExperiment() {
+    const attrs = privates.get(this);
+    attrs.started = true;
+    attrs.startedTime = new Date();
+    setTimeout(() => {
+      attrs.finished = true;
+      this.emit('finish');
+    }, 100000);
+    setInterval(() => {
+      this.emit('tick');
+    }, 1000);
+    this.emit('start');
+  }
+
   getQuery() {
     const {query, graph} = privates.get(this);
     if (query === null) {
@@ -72,8 +92,24 @@ class ExperimentStore extends EventEmitter {
     return privates.get(this).correctCount;
   }
 
+  getElapsedTime() {
+    return Math.floor((new Date() - privates.get(this).startedTime) / 1000);
+  }
+
   addUpdateListener(callback) {
     this.on('update', callback);
+  }
+
+  addStartListener(callback) {
+    this.on('start', callback);
+  }
+
+  addTickListener(callback) {
+    this.on('tick', callback);
+  }
+
+  addFinishListener(callback) {
+    this.on('finish', callback);
   }
 }
 
