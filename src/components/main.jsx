@@ -79,7 +79,7 @@ class Main extends React.Component {
     this.setState({
       finished: true
     });
-    const ref = new Firebase('https://egrid-r.firebaseio.com/items');
+    const ref = new Firebase('https://egrid-r.firebaseio.com/experiment2');
     ref.push({
       name: this.state.name,
       dataset: this.dataset,
