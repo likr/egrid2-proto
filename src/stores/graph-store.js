@@ -152,9 +152,9 @@ class GraphStore extends EventEmitter {
         case 'remove-selected-constructs':
           this.handleRemoveSelectedConstructs();
           break;
-        // case 'select-vertex':
-        //   this.handleSelectVertex(payload.u);
-        //   break;
+        case 'select-vertex':
+          this.handleSelectVertex(payload.u);
+          break;
         case 'set-layout-options':
           this.handleSetLayoutOptions(payload.options);
           break;

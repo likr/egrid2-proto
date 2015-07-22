@@ -21,7 +21,8 @@ class ExperimentStore extends EventEmitter {
       problemCount: 0,
       correctCount: 0,
       graph: new Graph(),
-      query: null
+      u: null,
+      v: null
     });
 
     AppDispatcher.register((payload) => {
@@ -29,8 +30,8 @@ class ExperimentStore extends EventEmitter {
         case 'load-graph':
           this.handleLoadGraph(payload.data);
           break;
-        case 'select-vertex':
-          this.handleSelectVertex(payload.u);
+        case 'guess':
+          this.handleGuess(payload.guess);
           break;
         case 'start-experiment':
           this.handleStartExperiment();
@@ -39,26 +40,42 @@ class ExperimentStore extends EventEmitter {
     });
   }
 
+  handleGuess(guess) {
+    const attrs = privates.get(this),
+          {graph, u, v} = attrs,
+          answer = !!(graph.edge(u, v) || graph.edge(v, u));
+    if (answer === guess) {
+      attrs.correctCount += 1;
+    }
+    attrs.problemCount += 1;
+    attrs.u = selectVertex(attrs.graph);
+    if (Math.random() < 0.5) {
+      const vs = [].concat(graph.outVertices(attrs.u), graph.inVertices(attrs.u)),
+            index = Math.floor(Math.random() * vs.length);
+      attrs.v = vs[index];
+    } else {
+      attrs.v = selectVertex(attrs.graph);
+    }
+    this.emit('update');
+  }
+
   handleLoadGraph(data) {
-    const {graph} = privates.get(this);
+    const attrs = privates.get(this),
+          graph = attrs.graph;
     for (const {u, d} of data.vertices) {
       graph.addVertex(u, d);
     }
     for (const {u, v, d} of data.edges) {
       graph.addEdge(u, v, d);
     }
-    privates.get(this).query = selectVertex(graph);
-    this.emit('update');
-  }
-
-  handleSelectVertex(u) {
-    const {graph} = privates.get(this);
-    const v = privates.get(this).query;
-    if (u === v) {
-      privates.get(this).correctCount += 1;
+    attrs.u = selectVertex(graph);
+    if (Math.random() < 0.5) {
+      const vs = [].concat(graph.outVertices(attrs.u), graph.inVertices(attrs.u)),
+            index = Math.floor(Math.random() * vs.length);
+      attrs.v = vs[index];
+    } else {
+      attrs.v = selectVertex(graph);
     }
-    privates.get(this).query = selectVertex(graph);
-    privates.get(this).problemCount += 1;
     this.emit('update');
   }
 
@@ -77,11 +94,15 @@ class ExperimentStore extends EventEmitter {
   }
 
   getQuery() {
-    const {query, graph} = privates.get(this);
-    if (query === null) {
+    const {u, v, graph} = privates.get(this);
+    if (u === null || v === null) {
       return null;
     }
-    return cutoff(graph.vertex(query).text);
+    return {
+      u, v,
+      uText: cutoff(graph.vertex(u).text),
+      vText: cutoff(graph.vertex(v).text)
+    };
   }
 
   getProblemCount() {
