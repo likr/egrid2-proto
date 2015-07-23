@@ -44,6 +44,7 @@ class BoxVertex extends React.Component {
             style={textStyle}
             x="0"
             y="5"
+            fill={color}
             textAnchor="middle"
             fontSize="10pt"
             onClick={this.handleClick.bind(this)}>

@@ -148,7 +148,7 @@ class NetworkDiagram extends React.Component {
           {t} = this.state,
           boxLayout = GraphStore.getLayoutType() === 'box';
     const vertices = layout.vertices.map((d) => {
-      const color = d.selected ? 'red' : 'black';
+      const color = (d.u === this.props.u || d.u === this.props.v) ? 'red' : 'black';
       if (boxLayout) {
         return (
           <BoxVertex

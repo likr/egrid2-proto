@@ -6,7 +6,7 @@ import {Styles, FlatButton, TextField} from 'material-ui';
 import Firebase from 'firebase';
 import ExperimentStore from '../stores/experiment-store';
 import GraphStore from '../stores/graph-store';
-import {loadGraph, setLayoutOptions, startExperiment} from '../app-actions';
+import {guess, loadGraph, selectVertex, setLayoutOptions, startExperiment} from '../app-actions';
 import NetworkDiagram from './network-diagram';
 import LayoutOptionsForm from './layout-options-form';
 
@@ -17,6 +17,10 @@ class Main extends React.Component {
     super(props);
 
     this.state = {
+      u: null,
+      v: null,
+      uText: '',
+      vText: '',
       name: '',
       started: false,
       finished: false,
@@ -75,7 +79,7 @@ class Main extends React.Component {
     this.setState({
       finished: true
     });
-    const ref = new Firebase('https://egrid-r.firebaseio.com/experiment1');
+    const ref = new Firebase('https://egrid-r.firebaseio.com/experiment2');
     ref.push({
       name: this.state.name,
       dataset: this.dataset,
@@ -106,11 +110,21 @@ class Main extends React.Component {
   }
 
   handleUpdateQuery() {
+    const {u, v, uText, vText} = ExperimentStore.getQuery();
     this.setState({
-      query: ExperimentStore.getQuery(),
+      u, v,
+      uText, vText,
       problemCount: ExperimentStore.getProblemCount(),
       correctCount: ExperimentStore.getCorrectCount()
     });
+  }
+
+  handleClickYesButton() {
+    guess(true);
+  }
+
+  handleClickNoButton() {
+    guess(false);
   }
 
   getChildContext() {
@@ -136,10 +150,14 @@ class Main extends React.Component {
             <div>
               <p>経過時間 {this.state.elapsedTime} / 100</p>
               <p>正解率 {this.state.correctCount} / {this.state.problemCount}</p>
-              <p>「{this.state.query}」をクリックしてください</p>
+              <p>「{this.state.uText}」と「{this.state.vText}」にはつながりがありますか？</p>
             </div>
-            <div style={{width: '100%', height: '800px'}}>
-              <NetworkDiagram layout={this.state.layout}/>
+            <div>
+              <FlatButton label="Yes" onClick={this.handleClickYesButton.bind(this)}/>
+              <FlatButton label="No" onClick={this.handleClickNoButton.bind(this)}/>
+            </div>
+            <div style={{marginTop: '10px', width: '100%', height: '800px'}}>
+              <NetworkDiagram layout={this.state.layout} u={this.state.u} v={this.state.v}/>
             </div>
           </div>
         );

@@ -7,6 +7,13 @@ const addConstruct = (text) => {
   });
 };
 
+const guess = (answer) => {
+  AppDispatcher.dispatch({
+    actionType: 'guess',
+    guess: answer
+  });
+};
+
 const ladderDown = (u, text) => {
   AppDispatcher.dispatch({
     actionType: 'ladder-down',
@@ -75,6 +82,7 @@ const updateText = (u, text) => {
 
 const AppActions = {
   addConstruct,
+  guess,
   ladderDown,
   ladderUp,
   loadGraph,
