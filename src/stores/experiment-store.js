@@ -54,7 +54,9 @@ class ExperimentStore extends EventEmitter {
             index = Math.floor(Math.random() * vs.length);
       attrs.v = vs[index];
     } else {
-      attrs.v = selectVertex(attrs.graph);
+      do {
+        attrs.v = selectVertex(graph);
+      } while (attrs.u === attrs.v)
     }
     this.emit('update');
   }
@@ -74,7 +76,9 @@ class ExperimentStore extends EventEmitter {
             index = Math.floor(Math.random() * vs.length);
       attrs.v = vs[index];
     } else {
-      attrs.v = selectVertex(graph);
+      do {
+        attrs.v = selectVertex(graph);
+      } while (attrs.u === attrs.v)
     }
     this.emit('update');
   }
