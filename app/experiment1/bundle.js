@@ -47082,9 +47082,7 @@ var Main = (function (_React$Component) {
               _react2['default'].createElement(
                 'p',
                 null,
-                '正解率 ',
-                _this.state.correctCount,
-                ' / ',
+                '回答数 ',
                 _this.state.problemCount
               ),
               _react2['default'].createElement(
