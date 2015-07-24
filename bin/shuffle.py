@@ -26,8 +26,9 @@ def main():
         ]
         random.shuffle(dataset)
         for i, d in enumerate(dataset):
-            print('{0}?dataset={1}&layerMargin={2}&type={3}'
-                  .format(base, 'ABCD'[i], d['margin'], d['type']))
+            print('{0}?dataset={1}&layerMargin={2}&box={3}'
+                  .format(base, 'ABCD'[i], d['margin'],
+                          1 if d['type'] == 'box' else 0))
 
 if __name__ == '__main__':
     main()
