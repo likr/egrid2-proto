@@ -1,44 +1,20 @@
 import React from 'react';
 import mixin from 'react-mixin';
 import Animate from '../react-animate';
-import GraphStore from '../stores/graph-store';
 import PointVertex from './point-vertex';
-import BoxVertex from './box-vertex';
 import Edge from './edge';
 
-const totalWidth = (layout) => {
-  let left = 0, right = 0;
-  for (const vertex of layout.vertices) {
-    left = Math.min(left, vertex.x - vertex.width / 2);
-    right = Math.max(right, vertex.x + vertex.width / 2 + vertex.rightMargin);
+const edgeColor = (upper, lower) => {
+  if (upper && lower) {
+    return '#dda0dd';
   }
-  return right - left;
-};
-
-const edgeColor = (upper, lower, boxLayout) => {
-  if (boxLayout) {
-    if (upper && lower) {
-      return '#800080';
-    }
-    if (upper) {
-      return '#0000ff';
-    }
-    if (lower) {
-      return '#ff0000';
-    }
-    return '#000000';
-  } else {
-    if (upper && lower) {
-      return '#dda0dd';
-    }
-    if (upper) {
-      return '#00bfff';
-    }
-    if (lower) {
-      return '#ffc0cb';
-    }
-    return '#bbb';
+  if (upper) {
+    return '#00bfff';
   }
+  if (lower) {
+    return '#ffc0cb';
+  }
+  return '#bbb';
 };
 
 class NetworkDiagram extends React.Component {
@@ -52,25 +28,8 @@ class NetworkDiagram extends React.Component {
       draggin: false,
       zoomX: 0,
       zoomY: 0,
-      zoomScale: 1
+      zoomScale: 0.5
     };
-  }
-
-  componentDidMount() {
-    const screenWidth = React.findDOMNode(this).parentNode.clientWidth,
-      layoutWidth = totalWidth(this.props.layout);
-    this.setState({
-      zoomScale: layoutWidth > 0 ? screenWidth / layoutWidth : 1
-    });
-  }
-
-  componentWillReceiveProps(nextProps) {
-    if (this.props.layout !== nextProps.layout) {
-      const screenWidth = React.findDOMNode(this).parentNode.clientWidth;
-      this.setState({
-        zoomScale: screenWidth / totalWidth(nextProps.layout)
-      });
-    }
   }
 
   dragStart(x, y) {
@@ -145,43 +104,25 @@ class NetworkDiagram extends React.Component {
 
   render() {
     const {layout} = this.props,
-          {t} = this.state,
-          boxLayout = GraphStore.getLayoutType() === 'box';
+          {t} = this.state;
     const vertices = layout.vertices.map((d) => {
       const color = d.selected ? 'red' : 'black';
-      if (boxLayout) {
-        return (
-          <BoxVertex
-              key={d.u}
-              u={d.u}
-              text={d.text}
-              t={t}
-              x={d.x}
-              y={d.y}
-              x0={d.x0}
-              y0={d.y0}
-              width={d.width}
-              height={d.height}
-              color={color}/>
-        );
-      } else {
-        return (
-          <PointVertex
-              key={d.u}
-              u={d.u}
-              text={d.text}
-              t={t}
-              x={d.x}
-              y={d.y}
-              x0={d.x0}
-              y0={d.y0}
-              color={color}/>
-        );
-      }
+      return (
+        <PointVertex
+            key={d.u}
+            u={d.u}
+            text={d.text}
+            t={t}
+            x={d.x}
+            y={d.y}
+            x0={d.x0}
+            y0={d.y0}
+            color={color}
+            selectVertex={this.props.toggleSelectVertex}/>
+      );
     });
     const edges = layout.edges.map((d) => {
-      const color = edgeColor(d.upper, d.lower, boxLayout),
-            edgeWidth = boxLayout ? 1 : 3;
+      const color = edgeColor(d.upper, d.lower);
       return (
         <Edge
             key={`${d.u}:${d.v}`}
@@ -189,7 +130,7 @@ class NetworkDiagram extends React.Component {
             points={d.points}
             points0={d.points0}
             reversed={d.reversed}
-            edgeWidth={edgeWidth}
+            edgeWidth="3"
             color={color}/>
       );
     });

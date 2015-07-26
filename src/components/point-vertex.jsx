@@ -1,5 +1,4 @@
 import React from 'react';
-import {selectVertex} from '../app-actions';
 
 class PointVertex extends React.Component {
   shouldComponentUpdate(nextProps) {
@@ -13,7 +12,7 @@ class PointVertex extends React.Component {
   }
 
   handleClick() {
-    selectVertex(this.props.u);
+    this.props.selectVertex(this.props.u);
   }
 
   render() {

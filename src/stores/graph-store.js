@@ -1,22 +1,17 @@
-import {EventEmitter} from 'events';
 import Graph from 'eg-graph/lib/graph';
 import Layouter from 'eg-graph/lib/layouter/sugiyama';
-import AppDispatcher from '../app-dispatcher';
+import {LOAD_GRAPH, SELECT_VERTICES, UNSELECT_VERTICES, TOGGLE_SELECT_VERTEX} from '../constants';
 import cutoff from '../utils/cutoff';
 import measureText from '../utils/measure-text';
 
 const layouter = new Layouter()
+  .layerMargin(10)
+  .vertexWidth(() => 10)
+  .vertexHeight(() => 10)
   .vertexMargin(3)
+  .vertexRightMargin(({d}) => d.width)
+  .edgeWidth(() => 3)
   .edgeMargin(3);
-
-const findExistingVertex = (graph, text) => {
-  for (const u of graph.vertices()) {
-    if (graph.vertex(u).text === text) {
-      return u;
-    }
-  }
-  return null;
-};
 
 const calcSizes = (graph) => {
   const sizes = measureText(graph.vertices().map((u) => cutoff(graph.vertex(u).text))),
@@ -27,262 +22,154 @@ const calcSizes = (graph) => {
   return result;
 };
 
-const privates = new WeakMap();
-
-const updateLayout = (that) => {
-  const {graph, layoutOptions} = privates.get(that),
-        {boxLayout, layerMargin} = layoutOptions,
-        sizes = calcSizes(graph);
-
-  layouter.layerMargin(layerMargin);
-  if (boxLayout) {
-    layouter
-      .vertexWidth(({u}) => sizes[u].width)
-      .vertexHeight(({u}) => sizes[u].height)
-      .vertexRightMargin(() => 0)
-      .edgeWidth(() => 1);
-  } else {
-    layouter
-      .vertexWidth(() => 10)
-      .vertexHeight(() => 10)
-      .vertexRightMargin(({u}) => sizes[u].width)
-      .edgeWidth(() => 3);
-  }
-
-  const positions = layouter.layout(graph),
-        positions0 = privates.get(that).positions,
-        vertices = graph.vertices().map((u) => {
-          const text = cutoff(graph.vertex(u).text),
-                {x, y, width, height} = positions.vertices[u],
-                rightMargin = layouter.vertexRightMargin()({u}),
-                enter = !positions0.vertices[u],
-                x0 = enter ? positions.vertices[u].x : positions0.vertices[u].x,
-                y0 = enter ? 0 : positions0.vertices[u].y,
-                selected = privates.get(that).selected[u] || false;
-          return {u, text, x, y, x0, y0, width, height, rightMargin, selected};
-        }),
-        edges = graph.edges().map(([u, v]) => {
-          const reversed = positions.edges[u][v].reversed,
-                points = positions.edges[u][v].points,
-                upper = privates.get(that).selected[v],
-                lower = privates.get(that).selected[u],
-                uEnter = !positions0.vertices[u],
-                vEnter = !positions0.vertices[v],
-                enter = uEnter || vEnter,
-                ux0 = uEnter ? positions.vertices[u].x : positions0.vertices[u].x,
-                uy0 = uEnter ? 0 : positions0.vertices[u].y,
-                vx0 = vEnter ? positions.vertices[v].x : positions0.vertices[v].x,
-                vy0 = vEnter ? 0 : positions0.vertices[v].y,
-                points0 = enter
-                  ? [[ux0, uy0], [ux0, uy0], [vx0, vy0], [vx0, vy0], [vx0, vy0], [vx0, vy0]]
-                  : positions0.edges[u][v].points;
-          while (points.length < 6) {
-            points.push(points[points.length - 1]);
-          }
-          return {u, v, points, points0, reversed, upper, lower};
-        });
+const sortEdges = (edges) => {
+  const priority = (upper, lower) => {
+    if (upper && lower) {
+      return 3;
+    }
+    if (upper) {
+      return 2;
+    }
+    if (lower) {
+      return 1;
+    }
+    return 0;
+  };
   edges.sort((d1, d2) => {
-    const priority = (upper, lower) => {
-      if (upper && lower) {
-        return 3;
-      }
-      if (upper) {
-        return 2;
-      }
-      if (lower) {
-        return 1;
-      }
-      return 0;
-    };
     return priority(d1.upper, d1.lower) - priority(d2.upper, d2.lower);
   });
-  privates.get(that).layout = {vertices, edges};
-  privates.get(that).positions = positions;
-
-  that.emit('change');
 };
 
-const updateSelection = (that) => {
-  const {selected, layout} = privates.get(that);
-  for (const d of layout.vertices) {
-    d.selected = selected[d.u];
+const layout = (graph, state) => {
+  const sizes = calcSizes(graph);
+  for (const u of graph.vertices()) {
+    Object.assign(graph.vertex(u), sizes[u]);
   }
-  for (const d of layout.edges) {
-    d.upper = selected[d.v];
-    d.lower = selected[d.u];
+
+  const positions = layouter.layout(graph);
+
+  const vertices = [];
+  for (const u of graph.vertices()) {
+    const d = graph.vertex(u);
+    const {text, selected} = d;
+    const {x, y, width, height} = positions.vertices[u];
+    const x0 = d.x === null ? x : d.x;
+    const y0 = d.y === null ? y : d.y;
+    vertices.push({
+      u, selected, x, y, x0, y0, width, height,
+      text: cutoff(text),
+      rightMargin: d.width
+    });
   }
-  layout.edges.sort((d1, d2) => {
-    const priority = (upper, lower) => {
-      if (upper && lower) {
-        return 3;
-      }
-      if (upper) {
-        return 2;
-      }
-      if (lower) {
-        return 1;
-      }
-      return 0;
-    };
-    return priority(d1.upper, d1.lower) - priority(d2.upper, d2.lower);
+
+  const enterPoints = (u, v) => {
+    const uD = graph.vertex(u),
+      vD = graph.vertex(v),
+      ux0 = uD === null ? positions.vertices[u].x : uD.x,
+      uy0 = uD === null ? 0 : uD.y,
+      vx0 = vD === null ? positions.vertices[v].x : vD.x,
+      vy0 = vD === null ? 0 : vD.y;
+    return [[ux0, uy0], [ux0, uy0], [vx0, vy0], [vx0, vy0], [vx0, vy0], [vx0, vy0]];
+  };
+  const edges = [];
+  for (const [u, v] of graph.edges()) {
+    const d = graph.edge(u, v);
+    const {upper, lower} = d;
+    const {points, reversed} = positions.edges[u][v];
+    while (points.length < 6) {
+      points.push(points[points.length - 1]);
+    }
+    const points0 = d.points === null ? enterPoints(u, v) : d.points;
+    edges.push({u, v, points, points0, reversed, upper, lower});
+  }
+  sortEdges(edges);
+
+  for (const u of graph.vertices()) {
+    const {x, y} = positions.vertices[u];
+    Object.assign(graph.vertex(u), {x, y});
+  }
+  for (const [u, v] of graph.edges()) {
+    const {points} = positions.edges[u][v];
+    Object.assign(graph.edge(u, v), {points});
+  }
+
+  return {vertices, edges};
+};
+
+const handleLoadGraph = (state, graph, data) => {
+  for (const {u, d} of data.vertices) {
+    graph.addVertex(u, Object.assign({
+      x: null,
+      y: null,
+      selected: false
+    }, d));
+  }
+  for (const {u, v, d} of data.edges) {
+    graph.addEdge(u, v, Object.assign({
+      points: null,
+      upper: 0,
+      lower: 0
+    }, d));
+  }
+  return layout(graph, state);
+};
+
+const handleSelectVertices = (state, graph, vertices) => {
+  return state;
+};
+
+const handleToggleSelectVertex = (state, graph, u) => {
+  const selected = !graph.vertex(u).selected;
+  graph.vertex(u).selected = selected;
+  const vertices = state.vertices.map((d) => {
+    if (d.u === u) {
+      return Object.assign({}, d, {selected});
+    }
+    return d;
   });
-  that.emit('change');
+  const edges = state.edges.map((d) => {
+    if (d.u === u) {
+      const lower = graph.edge(d.u, d.v).lower + (selected ? 1 : -1);
+      graph.edge(d.u, d.v).lower = lower;
+      return Object.assign({}, d, {lower});
+    }
+    if (d.v === u) {
+      const upper = graph.edge(d.u, d.v).upper + (selected ? 1 : -1);
+      graph.edge(d.u, d.v).upper = upper;
+      return Object.assign({}, d, {upper});
+    }
+    return d;
+  });
+  sortEdges(edges);
+  return {vertices, edges};
 };
 
-class GraphStore extends EventEmitter {
-  constructor() {
-    super();
+const handleUnselectVertices = (state, graph, vertices) => {
+  return state;
+};
 
-    privates.set(this, {
-      graph: new Graph(),
-      layoutOptions: {
-        boxLayout: false,
-        layerMargin: 0
-      },
-      selected: {},
-      positions: {
-        vertices: {},
-        edges: {}
-      },
-      layout: {
-        vertices: [],
-        edges: []
-      }
-    });
+let graph = new Graph();
 
-    AppDispatcher.register((payload) => {
-      switch (payload.actionType) {
-        case 'add-construct':
-          this.handleAddConstruct(payload.text);
-          break;
-        case 'ladder-down':
-          this.handleLadderDown(payload.u, payload.text);
-          break;
-        case 'ladder-up':
-          this.handleLadderUp(payload.u, payload.text);
-          break;
-        case 'load-graph':
-          this.handleLoadGraph(payload.data);
-          break;
-        case 'remove-selected-constructs':
-          this.handleRemoveSelectedConstructs();
-          break;
-        case 'select-vertex':
-          this.handleSelectVertex(payload.u);
-          break;
-        case 'set-layout-options':
-          this.handleSetLayoutOptions(payload.options);
-          break;
-        case 'update-text':
-          this.handleUpdateText(payload.u, payload.text);
-          break;
-      }
-    });
+const graphStore = (state=null, action) => {
+  if (state === null) {
+    state = {
+      vertices: [],
+      edges: []
+    };
   }
 
-  handleLoadGraph(data) {
-    const {graph} = privates.get(this);
-    for (const {u, d} of data.vertices) {
-      graph.addVertex(u, d);
-    }
-    for (const {u, v, d} of data.edges) {
-      graph.addEdge(u, v, d);
-    }
-    updateLayout(this);
+  switch (action.type) {
+    case LOAD_GRAPH:
+      return handleLoadGraph(state, graph, action.data);
+    case SELECT_VERTICES:
+      return handleSelectVertices(state, graph, action.vertices);
+    case TOGGLE_SELECT_VERTEX:
+      return handleToggleSelectVertex(state, graph, action.u);
+    case UNSELECT_VERTICES:
+      return handleUnselectVertices(state, graph, action.vertices);
+    default:
+      return state;
   }
+};
 
-  handleAddConstruct(text) {
-    const {graph, selected} = privates.get(this);
-    if (findExistingVertex(graph, text) !== null) {
-      return;
-    }
-    const u = graph.addVertex({
-      text
-    });
-    selected[u] = false;
-    updateLayout(this);
-  }
-
-  handleLadderUp(u, text) {
-    const {graph, selected} = privates.get(this);
-    const v = findExistingVertex(graph, text);
-    if (v === u) {
-      return;
-    } else if (v === null) {
-      const w = graph.addVertex({
-        text
-      });
-      graph.addEdge(w, u);
-      selected[w] = false;
-    } else {
-      graph.addEdge(v, u);
-    }
-    updateLayout(this);
-  }
-
-  handleLadderDown(u, text) {
-    const {graph, selected} = privates.get(this);
-    const v = findExistingVertex(graph, text);
-    if (v === u) {
-      return;
-    } else if (v === null) {
-      const w = graph.addVertex({
-        text
-      });
-      graph.addEdge(u, w);
-      selected[w] = false;
-    } else {
-      graph.addEdge(u, v);
-    }
-    updateLayout(this);
-  }
-
-  handleRemoveSelectedConstructs() {
-    const {graph, selected} = privates.get(this);
-    for (const u of graph.vertices()) {
-      if (selected[u]) {
-        graph.removeVertex(u);
-      }
-    }
-    updateLayout(this);
-  }
-
-  handleSelectVertex(u) {
-    const {selected} = privates.get(this);
-    selected[u] = !selected[u];
-    updateSelection(this);
-  }
-
-  handleSetLayoutOptions(options) {
-    Object.assign(privates.get(this).layoutOptions, options);
-    updateLayout(this);
-  }
-
-  handleUpdateText(u, text) {
-    const {graph} = privates.get(this);
-    graph.vertex(u).text = text;
-    updateLayout(this);
-  }
-
-  getLayout() {
-    return privates.get(this).layout;
-  }
-
-  getLayerMargin() {
-    return privates.get(this).layoutOptions.layerMargin;
-  }
-
-  getLayoutType() {
-    return privates.get(this).layoutOptions.boxLayout ? 'box' : 'point';
-  }
-
-  addChangeListener(callback) {
-    this.on('change', callback);
-  }
-
-  removeChangeListener(callback) {
-    this.removeListener('change', callback);
-  }
-}
-
-export default new GraphStore();
+export default graphStore;
