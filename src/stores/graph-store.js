@@ -37,7 +37,7 @@ const updateLayout = (that) => {
   layouter.layerMargin(layerMargin);
   if (boxLayout) {
     layouter
-      .vertexWidth(({u}) => 150)
+      .vertexWidth(({u}) => sizes[u].width)
       .vertexHeight(({u}) => sizes[u].height)
       .vertexRightMargin(() => 0)
       .edgeWidth(() => 1);
@@ -45,7 +45,7 @@ const updateLayout = (that) => {
     layouter
       .vertexWidth(() => 10)
       .vertexHeight(() => 10)
-      .vertexRightMargin(() => 140)
+      .vertexRightMargin(({u}) => sizes[u].width)
       .edgeWidth(() => 3);
   }
 
@@ -111,6 +111,21 @@ const updateSelection = (that) => {
     d.upper = selected[d.v];
     d.lower = selected[d.u];
   }
+  layout.edges.sort((d1, d2) => {
+    const priority = (upper, lower) => {
+      if (upper && lower) {
+        return 3;
+      }
+      if (upper) {
+        return 2;
+      }
+      if (lower) {
+        return 1;
+      }
+      return 0;
+    };
+    return priority(d1.upper, d1.lower) - priority(d2.upper, d2.lower);
+  });
   that.emit('change');
 };
 
@@ -122,7 +137,7 @@ class GraphStore extends EventEmitter {
       graph: new Graph(),
       layoutOptions: {
         boxLayout: false,
-        layerMargin: 30
+        layerMargin: 0
       },
       selected: {},
       positions: {

@@ -1,6 +1,5 @@
 import React from 'react';
 import mixin from 'react-mixin';
-import Graph from 'eg-graph/lib/graph';
 import Animate from '../react-animate';
 import GraphStore from '../stores/graph-store';
 import PointVertex from './point-vertex';
@@ -58,9 +57,10 @@ class NetworkDiagram extends React.Component {
   }
 
   componentDidMount() {
-    const screenWidth = React.findDOMNode(this).parentNode.clientWidth;
+    const screenWidth = React.findDOMNode(this).parentNode.clientWidth,
+      layoutWidth = totalWidth(this.props.layout);
     this.setState({
-      zoomScale: screenWidth / totalWidth(this.props.layout)
+      zoomScale: layoutWidth > 0 ? screenWidth / layoutWidth : 1
     });
   }
 
@@ -100,36 +100,36 @@ class NetworkDiagram extends React.Component {
     }
   }
 
-  onMouseDown({clientX, clientY}) {
+  handleMouseDown({clientX, clientY}) {
     this.dragStart(clientX, clientY);
   }
 
-  onMouseUp() {
+  handleMouseUp() {
     this.dragEnd();
   }
 
-  onMouseMove(e) {
+  handleMouseMove(e) {
     const {clientX, clientY} = e;
     this.dragMove(clientX, clientY);
     e.preventDefault();
   }
 
-  onTouchStart({touches}) {
+  handleTouchStart({touches}) {
     const {clientX, clientY} = touches[0];
     this.dragStart(clientX, clientY);
   }
 
-  onTouchEnd() {
+  handleTouchEnd() {
     this.dragEnd();
   }
 
-  onTouchMove(e) {
+  handleTouchMove(e) {
     const {clientX, clientY} = e.touches[0];
     this.dragMove(clientX, clientY);
     e.preventDefault();
   }
 
-  onWheel(e) {
+  handleWheel(e) {
     const {clientX, clientY, deltaY} = e,
           zoomFactor = 0.9,
           scale = Math.max(0.1, Math.min(2, deltaY < 0
@@ -148,7 +148,7 @@ class NetworkDiagram extends React.Component {
           {t} = this.state,
           boxLayout = GraphStore.getLayoutType() === 'box';
     const vertices = layout.vertices.map((d) => {
-      const color = (d.u === this.props.u || d.u === this.props.v) ? 'red' : 'black';
+      const color = d.selected ? 'red' : 'black';
       if (boxLayout) {
         return (
           <BoxVertex
@@ -195,12 +195,16 @@ class NetworkDiagram extends React.Component {
     });
 
     const svgTransform = `translate(${this.state.zoomX},${this.state.zoomY})scale(${this.state.zoomScale})`;
-    const svgStyle = {
-      cursor: 'move'
-    };
     return (
       <svg width="100%" height="100%"
-          style={svgStyle}>
+          onMouseDown={this.handleMouseDown.bind(this)}
+          onMouseUp={this.handleMouseUp.bind(this)}
+          onMouseMove={this.handleMouseMove.bind(this)}
+          onTouchStart={this.handleTouchStart.bind(this)}
+          onTouchEnd={this.handleTouchEnd.bind(this)}
+          onTouchMove={this.handleTouchMove.bind(this)}
+          onWheel={this.handleWheel.bind(this)}
+          style={{cursor: 'move'}}>
         <g className="contents" transform={svgTransform}>
           <g className="edges">
             {edges}
