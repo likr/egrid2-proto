@@ -40,6 +40,24 @@ const sortEdges = (edges) => {
   });
 };
 
+const connectedVertices = (graph, u, inverse=false) => {
+  const visited = new Set([u]);
+  const queue = [u];
+  const adjacentVertices = inverse
+    ? (v) => graph.inVertices(v)
+    : (v) => graph.outVertices(v);
+  while (queue.length > 0) {
+    const v = queue.shift();
+    for (const w of adjacentVertices(v)) {
+      if (!visited.has(w)) {
+        visited.add(w);
+        queue.push(w);
+      }
+    }
+  }
+  return visited;
+};
+
 const layout = (graph, state) => {
   const sizes = calcSizes(graph);
   for (const u of graph.vertices()) {
@@ -120,6 +138,8 @@ const handleSelectVertices = (state, graph, vertices) => {
 
 const handleToggleSelectVertex = (state, graph, u) => {
   const selected = !graph.vertex(u).selected;
+  const lowerVertices = connectedVertices(graph, u, false);
+  const upperVertices = connectedVertices(graph, u, true);
   graph.vertex(u).selected = selected;
   const vertices = state.vertices.map((d) => {
     if (d.u === u) {
@@ -128,12 +148,12 @@ const handleToggleSelectVertex = (state, graph, u) => {
     return d;
   });
   const edges = state.edges.map((d) => {
-    if (d.u === u) {
+    if (lowerVertices.has(d.u) && lowerVertices.has(d.v)) {
       const lower = graph.edge(d.u, d.v).lower + (selected ? 1 : -1);
       graph.edge(d.u, d.v).lower = lower;
       return Object.assign({}, d, {lower});
     }
-    if (d.v === u) {
+    if (upperVertices.has(d.u) && upperVertices.has(d.v)) {
       const upper = graph.edge(d.u, d.v).upper + (selected ? 1 : -1);
       graph.edge(d.u, d.v).upper = upper;
       return Object.assign({}, d, {upper});
