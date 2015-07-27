@@ -1,6 +1,6 @@
 import Graph from 'eg-graph/lib/graph';
 import Layouter from 'eg-graph/lib/layouter/sugiyama';
-import {LOAD_GRAPH, SELECT_VERTICES, SELECT_VERTICES_BY_PARTICIPANT, UNSELECT_VERTICES, TOGGLE_SELECT_VERTEX} from '../constants';
+import {CLEAR_SELECTION, LOAD_GRAPH, SELECT_VERTICES, SELECT_VERTICES_BY_PARTICIPANT, UNSELECT_VERTICES, TOGGLE_SELECT_VERTEX} from '../constants';
 import cutoff from '../utils/cutoff';
 import measureText from '../utils/measure-text';
 
@@ -114,41 +114,50 @@ const layout = (graph, state) => {
   return {vertices, edges};
 };
 
-const selectVertices = (state, graph, us) => {
+const selectVertices = (state, graph, us, selected=false) => {
   const verticesSet = new Set(us),
     upperCount = new Map(),
     lowerCount = new Map();
 
   for (const u of us) {
-    graph.vertex(u).selected = true;
-    for (const v of connectedVertices(graph, u, false)) {
-      if (!upperCount.has(v)) {
-        upperCount.set(v, 0);
+    if (graph.vertex(u).selected === selected) {
+      graph.vertex(u).selected = !selected;
+      for (const v of connectedVertices(graph, u, true)) {
+        if (!upperCount.has(v)) {
+          upperCount.set(v, 0);
+        }
+        upperCount.set(v, upperCount.get(v) + 1);
       }
-      upperCount.set(v, upperCount.get(v) + 1);
-    }
-    for (const v of connectedVertices(graph, u, true)) {
-      if (!lowerCount.has(v)) {
-        lowerCount.set(v, 0);
+      for (const v of connectedVertices(graph, u, false)) {
+        if (!lowerCount.has(v)) {
+          lowerCount.set(v, 0);
+        }
+        lowerCount.set(v, lowerCount.get(v) + 1);
       }
-      lowerCount.set(v, lowerCount.get(v) + 1);
     }
   }
 
   const vertices = state.vertices.map((d) => {
     if (verticesSet.has(d.u)) {
-      return Object.assign({}, d, {selected: true});
+      return Object.assign({}, d, {selected: !selected});
     }
     return d;
   });
   const edges = state.edges.map((d) => {
+    if (upperCount.has(d.u) && upperCount.has(d.v) && lowerCount.has(d.u) && lowerCount.has(d.v)) {
+      const upper = graph.edge(d.u, d.v).upper + (selected ? -1 : 1) * Math.min(upperCount.get(d.u), upperCount.get(d.v)),
+        lower = graph.edge(d.u, d.v).lower + (selected ? -1 : 1) * Math.min(lowerCount.get(d.u), lowerCount.get(d.v));
+      graph.edge(d.u, d.v).upper = upper;
+      graph.edge(d.u, d.v).lower = lower;
+      return Object.assign({}, d, {upper, lower});
+    }
     if (upperCount.has(d.u) && upperCount.has(d.v)) {
-      const upper = graph.edge(d.u, d.v).upper + Math.min(upperCount.get(d.u), upperCount.get(d.v));
+      const upper = graph.edge(d.u, d.v).upper + (selected ? -1 : 1) * Math.min(upperCount.get(d.u), upperCount.get(d.v));
       graph.edge(d.u, d.v).upper = upper;
       return Object.assign({}, d, {upper});
     }
     if (lowerCount.has(d.u) && lowerCount.has(d.v)) {
-      const lower = graph.edge(d.u, d.v).lower + Math.min(lowerCount.get(d.u), lowerCount.get(d.v));
+      const lower = graph.edge(d.u, d.v).lower + (selected ? -1 : 1) * Math.min(lowerCount.get(d.u), lowerCount.get(d.v));
       graph.edge(d.u, d.v).lower = lower;
       return Object.assign({}, d, {lower});
     }
@@ -158,48 +167,9 @@ const selectVertices = (state, graph, us) => {
   return {vertices, edges};
 };
 
-const unselectVertices = (state, graph, us) => {
-  const verticesSet = new Set(us),
-    upperCount = new Map(),
-    lowerCount = new Map();
-
-  for (const u of us) {
-    graph.vertex(u).selected = false;
-    for (const v of connectedVertices(graph, u, false)) {
-      if (!upperCount.has(v)) {
-        upperCount.set(v, 0);
-      }
-      upperCount.set(v, upperCount.get(v) + 1);
-    }
-    for (const v of connectedVertices(graph, u, true)) {
-      if (!lowerCount.has(v)) {
-        lowerCount.set(v, 0);
-      }
-      lowerCount.set(v, lowerCount.get(v) + 1);
-    }
-  }
-
-  const vertices = state.vertices.map((d) => {
-    if (verticesSet.has(d.u)) {
-      return Object.assign({}, d, {selected: false});
-    }
-    return d;
-  });
-  const edges = state.edges.map((d) => {
-    if (upperCount.has(d.u) && upperCount.has(d.v)) {
-      const upper = graph.edge(d.u, d.v).upper - Math.min(upperCount.get(d.u), upperCount.get(d.v));
-      graph.edge(d.u, d.v).upper = upper;
-      return Object.assign({}, d, {upper});
-    }
-    if (lowerCount.has(d.u) && lowerCount.has(d.v)) {
-      const lower = graph.edge(d.u, d.v).lower - Math.min(lowerCount.get(d.u), lowerCount.get(d.v));
-      graph.edge(d.u, d.v).lower = lower;
-      return Object.assign({}, d, {lower});
-    }
-    return d;
-  });
-  sortEdges(edges);
-  return {vertices, edges};
+const handleClearSelection = (state, graph) => {
+  const vertices = graph.vertices().filter((u) => graph.vertex(u).selected);
+  return selectVertices(state, graph, vertices, true);
 };
 
 const handleLoadGraph = (state, graph, data) => {
@@ -230,15 +200,11 @@ const handleSelectVerticesByParticipant = (state, graph, participant) => {
 };
 
 const handleToggleSelectVertex = (state, graph, u) => {
-  if (graph.vertex(u).selected) {
-    return unselectVertices(state, graph, [u]);
-  } else {
-    return selectVertices(state, graph, [u]);
-  }
+  return selectVertices(state, graph, [u], graph.vertex(u).selected);
 };
 
 const handleUnselectVertices = (state, graph, vertices) => {
-  return unselectVertices(state, graph, vertices);
+  return selectVertices(state, graph, vertices, true);
 };
 
 let graph = new Graph();
@@ -252,6 +218,8 @@ const graphStore = (state=null, action) => {
   }
 
   switch (action.type) {
+    case CLEAR_SELECTION:
+      return handleClearSelection(state, graph);
     case LOAD_GRAPH:
       return handleLoadGraph(state, graph, action.data);
     case SELECT_VERTICES:
