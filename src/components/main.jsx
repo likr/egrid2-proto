@@ -1,7 +1,7 @@
 /* global fetch */
-import 'whatwg-fetch';
 import React from 'react';
 import NetworkDiagram from './network-diagram';
+import ParticipantsList from './participants-list';
 
 class Main extends React.Component {
   componentDidMount() {
@@ -12,9 +12,15 @@ class Main extends React.Component {
 
   render() {
     return (
-      <div style={{position: 'absolute', left: 0, right: 0, top: 0, bottom: '10px'}}>
-        <NetworkDiagram layout={this.props.graph} toggleSelectVertex={this.props.toggleSelectVertex}/>
-      </div>
+      <div>
+        <div style={{position: 'absolute', left: 0, right: '200px', top: 0, bottom: '10px'}}>
+          <NetworkDiagram layout={this.props.graph} toggleSelectVertex={this.props.toggleSelectVertex}/>
+        </div>
+        <div style={{position: 'absolute', right: 0, top: 0, bottom: '10px', width: '200px',
+            overflowX: 'hidden', overflowY: 'scroll', background: 'skyblue'}}>
+          <ParticipantsList participants={this.props.participants} selectVerticesByParticipant={this.props.selectVerticesByParticipant}/>
+        </div>
+    </div>
     );
   }
 }

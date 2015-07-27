@@ -1,4 +1,4 @@
-import {LOAD_GRAPH, SELECT_VERTICES, TOGGLE_SELECT_VERTEX, UNSELECT_VERTICES} from '../constants';
+import {LOAD_GRAPH, SELECT_VERTICES, SELECT_VERTICES_BY_PARTICIPANT, TOGGLE_SELECT_VERTEX, UNSELECT_VERTICES} from '../constants';
 
 export const loadGraph = (data) => {
   return {
@@ -11,6 +11,13 @@ export const selectVertices = (vertices) => {
   return {
     type: SELECT_VERTICES,
     vertices
+  };
+};
+
+export const selectVerticesByParticipant = (participant) => {
+  return {
+    type: SELECT_VERTICES_BY_PARTICIPANT,
+    participant
   };
 };
 

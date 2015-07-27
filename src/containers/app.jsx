@@ -4,10 +4,14 @@ import {Styles} from 'material-ui';
 import {Connector, Provider} from 'redux/react';
 import * as graphActions from '../actions/graph-actions';
 import graphStore from '../stores/graph-store';
+import participantsStore from '../stores/participants-store';
 import Main from '../components/main';
 
 const ThemeManager = new Styles.ThemeManager();
-const redux = createRedux({graph: graphStore});
+const redux = createRedux({
+  graph: graphStore,
+  participants: participantsStore
+});
 
 class App extends React.Component {
   componentWillMount() {
@@ -29,10 +33,10 @@ class App extends React.Component {
     return (
       <Provider redux={redux}>
         {() => (
-          <Connector select={(state) => ({graph: state.graph})}>
-            {({dispatch, graph}) => {
+          <Connector select={(state) => ({graph: state.graph, participants: state.participants})}>
+            {({dispatch, graph, participants}) => {
               return (
-                <Main graph={graph}
+                <Main graph={graph} participants={participants}
                     {...bindActionCreators(graphActions, dispatch)}/>
               );
             }}
