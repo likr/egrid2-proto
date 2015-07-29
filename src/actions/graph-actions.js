@@ -1,4 +1,12 @@
-import {CLEAR_SELECTION, LOAD_GRAPH, SELECT_VERTICES, SELECT_VERTICES_BY_PARTICIPANT, TOGGLE_SELECT_VERTEX, UNSELECT_VERTICES} from '../constants';
+import {
+  CLEAR_SELECTION,
+  LOAD_GRAPH,
+  SET_COARSE_GRAINING_RATIO,
+  SELECT_VERTICES,
+  SELECT_VERTICES_BY_PARTICIPANT,
+  TOGGLE_SELECT_VERTEX,
+  UNSELECT_VERTICES
+} from '../constants';
 
 export const clearSelection = () => {
   return {
@@ -10,6 +18,13 @@ export const loadGraph = (data) => {
   return {
     type: LOAD_GRAPH,
     data
+  };
+};
+
+export const setCoarseGrainingRatio = (ratio) => {
+  return {
+    type: SET_COARSE_GRAINING_RATIO,
+    ratio
   };
 };
 

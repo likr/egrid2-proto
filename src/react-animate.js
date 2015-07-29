@@ -1,3 +1,4 @@
+/* global window */
 import Ease from 'ease-component';
 
 var requestAnimationFrame = null;
@@ -56,7 +57,7 @@ const Animate = {
       startState: {},
       endState: {},
       duration: 500,
-      ease: "in-out-cube",
+      ease: 'in-out-cube',
       callback: function() {},
       component: this
     };
