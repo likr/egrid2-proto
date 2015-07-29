@@ -20,6 +20,26 @@ const edgeColor = (upper, lower) => {
   return '#bbb';
 };
 
+const sortEdges = (edges, upperCount, lowerCount) => {
+  const priority = (u, v) => {
+    const upper = upperCount.has(u) && upperCount.has(v) ? Math.min(upperCount.get(u), upperCount.get(v)) : 0,
+      lower = lowerCount.has(u) && lowerCount.has(v) ? Math.min(lowerCount.get(u), lowerCount.get(v)) : 0;
+    if (upper && lower) {
+      return 3;
+    }
+    if (upper) {
+      return 2;
+    }
+    if (lower) {
+      return 1;
+    }
+    return 0;
+  };
+  edges.sort((d1, d2) => {
+    return priority(d1.u, d1.v) - priority(d2.u, d2.v);
+  });
+};
+
 class NetworkDiagramInner extends React.Component {
   constructor(props) {
     super(props);
@@ -64,6 +84,8 @@ class NetworkDiagramInner extends React.Component {
             selectVertex={this.props.toggleSelectVertex}/>
       );
     });
+
+    sortEdges(layout.edges, upperCount, lowerCount);
     const edges = layout.edges.map((d) => {
       const {u, v} = d,
         upper = upperCount.has(u) && upperCount.has(v) ? Math.min(upperCount.get(u), upperCount.get(v)) : 0,

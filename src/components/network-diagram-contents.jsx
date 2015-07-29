@@ -1,7 +1,9 @@
 import React from 'react';
+import {connect} from 'redux/react';
 import Layouter from 'eg-graph/lib/layouter/sugiyama';
 import cutoff from '../utils/cutoff';
 import measureText from '../utils/measure-text';
+import {toggleSelectVertex} from '../actions/graph-actions';
 import NetworkDiagramInner from './network-diagram-inner';
 
 const layouter = new Layouter()
@@ -20,24 +22,6 @@ const calcSizes = (graph) => {
     result[u] = sizes[i];
   });
   return result;
-};
-
-const sortEdges = (edges) => {
-  const priority = (upper, lower) => {
-    if (upper && lower) {
-      return 3;
-    }
-    if (upper) {
-      return 2;
-    }
-    if (lower) {
-      return 1;
-    }
-    return 0;
-  };
-  edges.sort((d1, d2) => {
-    return priority(d1.upper, d1.lower) - priority(d2.upper, d2.lower);
-  });
 };
 
 const layout = (graph, state) => {
@@ -82,7 +66,6 @@ const layout = (graph, state) => {
     const points0 = d.points === null ? enterPoints(u, v) : d.points;
     edges.push({u, v, points, points0, reversed, upper, lower});
   }
-  sortEdges(edges);
 
   for (const u of graph.vertices()) {
     const {x, y} = positions.vertices[u];
@@ -137,6 +120,10 @@ const countRelations = (graph, vertices) => {
   return {upperCount, lowerCount};
 };
 
+@connect((state) => ({
+  graph: state.graph,
+  selection: state.selection
+}))
 class NetworkDiagramContents extends React.Component {
   constructor(props) {
     super(props);
@@ -180,7 +167,7 @@ class NetworkDiagramContents extends React.Component {
         selection={this.props.selection}
         upperCount={this.state.upperCount}
         lowerCount={this.state.lowerCount}
-        toggleSelectVertex={this.props.toggleSelectVertex}/>
+        toggleSelectVertex={(u) => this.props.dispatch(toggleSelectVertex(u))}/>
     );
   }
 }

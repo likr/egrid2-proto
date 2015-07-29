@@ -1,6 +1,9 @@
 import React from 'react';
+import {connect} from 'redux/react';
 import {Slider} from 'material-ui';
+import {setCoarseGrainingRatio} from '../actions/graph-actions';
 
+@connect(() => ({}))
 class CoarseGrainingController extends React.Component {
   constructor(props) {
     super(props);
@@ -17,8 +20,8 @@ class CoarseGrainingController extends React.Component {
           <Slider
             name="coarse-graining"
             value={this.state.ratio}
-            onChange={this.handleChange.bind(this)}
-            onDragStop={this.handleDragStop.bind(this)}/>
+            onChange={::this.handleChange}
+            onDragStop={::this.handleDragStop}/>
         </div>
       </div>
     );
@@ -31,7 +34,7 @@ class CoarseGrainingController extends React.Component {
   }
 
   handleDragStop() {
-    this.props.setCoarseGrainingRatio(this.state.ratio);
+    this.props.dispatch(setCoarseGrainingRatio(this.state.ratio));
   }
 }
 

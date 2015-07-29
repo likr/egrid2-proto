@@ -1,8 +1,7 @@
 import React from 'react';
-import {bindActionCreators, createRedux} from 'redux';
+import {createRedux} from 'redux';
 import {Styles} from 'material-ui';
-import {Connector, Provider} from 'redux/react';
-import * as graphActions from '../actions/graph-actions';
+import {Provider} from 'redux/react';
 import graphStore from '../stores/graph-store';
 import participantsStore from '../stores/participants-store';
 import selectionStore from '../stores/selection-store';
@@ -35,14 +34,7 @@ class App extends React.Component {
     return (
       <Provider redux={redux}>
         {() => (
-          <Connector select={(state) => ({graph: state.graph, participants: state.participants, selection: state.selection})}>
-            {({dispatch, graph, participants, selection}) => {
-              return (
-                <Main graph={graph} participants={participants} selection={selection}
-                    {...bindActionCreators(graphActions, dispatch)}/>
-              );
-            }}
-          </Connector>
+          <Main/>
         )}
       </Provider>
     );

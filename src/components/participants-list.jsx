@@ -1,5 +1,10 @@
 import React from 'react';
+import {connect} from 'redux/react';
+import {selectVerticesByParticipant} from '../actions/graph-actions';
 
+@connect((state) => ({
+  participants: state.participants
+}))
 class ParticipantsList extends React.Component {
   render() {
     const participants = this.props.participants.map((participant, i) => {
@@ -21,7 +26,7 @@ class ParticipantsList extends React.Component {
   }
 
   handleClickParticipant(participant) {
-    this.props.selectVerticesByParticipant(participant);
+    this.props.dispatch(selectVerticesByParticipant(participant));
   }
 }
 

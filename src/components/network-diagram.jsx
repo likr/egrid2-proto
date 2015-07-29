@@ -99,10 +99,7 @@ class NetworkDiagram extends React.Component {
           onWheel={this.handleWheel.bind(this)}
           style={{cursor: 'move'}}>
         <g className="contents" transform={svgTransform}>
-          <NetworkDiagramContents
-              graph={this.props.graph}
-              selection={this.props.selection}
-              toggleSelectVertex={this.props.toggleSelectVertex}/>
+          <NetworkDiagramContents/>
         </g>
       </svg>
     );
