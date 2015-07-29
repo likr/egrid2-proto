@@ -1,18 +1,43 @@
 import React from 'react';
+import cutoff from '../utils/cutoff';
 
 class PointVertex extends React.Component {
-  shouldComponentUpdate(nextProps) {
+  constructor(props) {
+    super(props);
+    this.state = {
+      text: cutoff(props.text)
+    };
+  }
+
+  shouldComponentUpdate(nextProps, nextState) {
     const attrs = ['t', 'color', 'x', 'y', 'x0', 'y0', 'text'];
     for (const attr of attrs) {
       if (this.props[attr] !== nextProps[attr]) {
         return true;
       }
     }
+    if (this.state.text !== nextState.text) {
+      return true;
+    }
     return false;
   }
 
   handleClick() {
     this.props.selectVertex(this.props.u);
+  }
+
+  handleMouseOver() {
+    this.setState({
+      text: this.props.text
+    });
+  }
+
+  handleMouseLeave() {
+    setTimeout(() => {
+      this.setState({
+        text: cutoff(this.props.text)
+      });
+    }, 2000);
   }
 
   render() {
@@ -26,9 +51,23 @@ class PointVertex extends React.Component {
       MsUserSelect: 'none'
     };
     return (
-      <g className="vertex" style={{cursor: 'pointer'}} transform={`translate(${x},${y})`}>
-        <circle r="5" fill={color} onClick={this.handleClick.bind(this)}/>
-        <text style={textStyle} x="7" y="6" fontSize="10pt" onClick={this.handleClick.bind(this)}>{this.props.text}</text>
+      <g
+          className="vertex"
+          style={{cursor: 'pointer'}}
+          transform={`translate(${x},${y})`}
+          onClick={this.handleClick.bind(this)}
+          onMouseOver={this.handleMouseOver.bind(this)}
+          onMouseLeave={this.handleMouseLeave.bind(this)}>
+        <circle
+          r="5"
+          fill={color}/>
+        <text
+          style={textStyle}
+          x="7"
+          y="6"
+          fontSize="10pt">
+          {this.state.text}
+        </text>
       </g>
     );
   }

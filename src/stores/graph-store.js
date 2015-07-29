@@ -75,7 +75,7 @@ const layout = (graph, state) => {
     const y0 = d.y === null ? y : d.y;
     vertices.push({
       u, selected, x, y, x0, y0, width, height,
-      text: cutoff(text),
+      text: text,
       rightMargin: d.width
     });
   }
