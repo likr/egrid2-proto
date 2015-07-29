@@ -16,7 +16,7 @@ class Main extends React.Component {
     return (
       <div>
         <div style={{position: 'absolute', left: 0, right: '300px', top: 0, bottom: 0}}>
-          <NetworkDiagram graph={this.props.graph} toggleSelectVertex={this.props.toggleSelectVertex}/>
+          <NetworkDiagram graph={this.props.graph} selection={this.props.selection} toggleSelectVertex={this.props.toggleSelectVertex}/>
         </div>
         <div style={{position: 'absolute', right: 0, top: 0, bottom: 0, width: '300px',
             overflowX: 'hidden', overflowY: 'scroll', background: 'skyblue'}}>

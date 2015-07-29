@@ -45,11 +45,11 @@ class NetworkDiagramInner extends React.Component {
   }
 
   render() {
-    const {layout} = this.props,
+    const {layout, selection, upperCount, lowerCount} = this.props,
       {t} = this.state;
 
     const vertices = layout.vertices.map((d) => {
-      const color = d.selected ? 'red' : 'black';
+      const color = selection.has(d.u) ? 'red' : 'black';
       return (
         <PointVertex
             key={d.u}
@@ -65,10 +65,13 @@ class NetworkDiagramInner extends React.Component {
       );
     });
     const edges = layout.edges.map((d) => {
-      const color = edgeColor(d.upper, d.lower);
+      const {u, v} = d,
+        upper = upperCount.has(u) && upperCount.has(v) ? Math.min(upperCount.get(u), upperCount.get(v)) : 0,
+        lower = lowerCount.has(u) && lowerCount.has(v) ? Math.min(lowerCount.get(u), lowerCount.get(v)) : 0,
+        color = edgeColor(upper, lower);
       return (
         <Edge
-            key={`${d.u}:${d.v}`}
+            key={`${u}:${v}`}
             t={t}
             points={d.points}
             points0={d.points0}

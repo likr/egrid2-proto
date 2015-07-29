@@ -101,6 +101,7 @@ class NetworkDiagram extends React.Component {
         <g className="contents" transform={svgTransform}>
           <NetworkDiagramContents
               graph={this.props.graph}
+              selection={this.props.selection}
               toggleSelectVertex={this.props.toggleSelectVertex}/>
         </g>
       </svg>

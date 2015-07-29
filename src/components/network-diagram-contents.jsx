@@ -96,15 +96,90 @@ const layout = (graph, state) => {
   return {vertices, edges};
 };
 
+const connectedVertices = (graph, u, inverse=false) => {
+  const visited = new Set([u]);
+  const queue = [u];
+  const adjacentVertices = inverse
+    ? (v) => graph.inVertices(v)
+    : (v) => graph.outVertices(v);
+  while (queue.length > 0) {
+    const v = queue.shift();
+    for (const w of adjacentVertices(v)) {
+      if (!visited.has(w)) {
+        visited.add(w);
+        queue.push(w);
+      }
+    }
+  }
+  return visited;
+};
+
+const countRelations = (graph, vertices) => {
+  const upperCount = new Map(),
+    lowerCount = new Map();
+
+  for (const u of vertices) {
+    if (graph.vertex(u)) {
+      for (const v of connectedVertices(graph, u, true)) {
+        if (!upperCount.has(v)) {
+          upperCount.set(v, 0);
+        }
+        upperCount.set(v, upperCount.get(v) + 1);
+      }
+      for (const v of connectedVertices(graph, u, false)) {
+        if (!lowerCount.has(v)) {
+          lowerCount.set(v, 0);
+        }
+        lowerCount.set(v, lowerCount.get(v) + 1);
+      }
+    }
+  }
+  return {upperCount, lowerCount};
+};
+
 class NetworkDiagramContents extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      layout: layout(props.graph)
+    };
+  }
+
   shouldComponentUpdate(nextProps) {
-    return this.props.graph !== nextProps.graph;
+    if (this.props.graph !== nextProps.graph) {
+      return true;
+    }
+    if (this.props.selection !== nextProps.selection) {
+      return true;
+    }
+    return false;
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (this.props.graph !== nextProps.graph) {
+      const {upperCount, lowerCount} = countRelations(nextProps.graph, nextProps.selection);
+      this.setState({
+        layout: layout(nextProps.graph),
+        upperCount,
+        lowerCount
+      });
+    }
+    if (this.props.selection !== nextProps.selection) {
+      const {upperCount, lowerCount} = countRelations(nextProps.graph, nextProps.selection);
+      this.setState({
+        upperCount,
+        lowerCount
+      });
+    }
   }
 
   render() {
     return (
       <NetworkDiagramInner
-        layout={layout(this.props.graph)}
+        layout={this.state.layout}
+        selection={this.props.selection}
+        upperCount={this.state.upperCount}
+        lowerCount={this.state.lowerCount}
         toggleSelectVertex={this.props.toggleSelectVertex}/>
     );
   }
