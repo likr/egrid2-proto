@@ -20,9 +20,7 @@ class ParticipantsList extends React.Component {
       }
     };
     const rowData = this.props.participants.map((participant, i) => {
-      const active = Array.from(this.props.selection).some((u) => this.props.graph.vertex(u).participants.indexOf(participant) > -1);
       return {
-        selected: active,
         name: {
           content: `Participant ${i + 1}`
         },
@@ -31,7 +29,6 @@ class ParticipantsList extends React.Component {
         }
       };
     });
-    console.log(rowData);
     return (
       <div>
         <h3>Participants</h3>
