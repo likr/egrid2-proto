@@ -41,7 +41,7 @@ class PointVertex extends React.Component {
   }
 
   render() {
-    const {t, x0, y0, color} = this.props;
+    const {t, x0, y0, width, height, color} = this.props;
     const x = (this.props.x - x0) * t + x0,
           y = (this.props.y - y0) * t + y0;
     const textStyle = {
@@ -58,12 +58,13 @@ class PointVertex extends React.Component {
           onClick={this.handleClick.bind(this)}
           onMouseOver={this.handleMouseOver.bind(this)}
           onMouseLeave={this.handleMouseLeave.bind(this)}>
-        <circle
-          r="5"
+        <ellipse
+          rx={width / 2}
+          ry={height / 2}
           fill={color}/>
         <text
           style={textStyle}
-          x="7"
+          x={width / 2 + 1}
           y="6"
           fontFamily='"Lucida Grande","Hiragino Kaku Gothic ProN","ヒラギノ角ゴ ProN W3",Meiryo,メイリオ,sans-serif'
           fontSize="10pt">

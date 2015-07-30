@@ -80,6 +80,8 @@ class NetworkDiagramInner extends React.Component {
             y={d.y}
             x0={d.x0}
             y0={d.y0}
+            width={d.width}
+            height={d.height}
             color={color}
             selectVertex={this.props.toggleSelectVertex}/>
       );

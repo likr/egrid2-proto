@@ -73,6 +73,11 @@ const handleLoadGraph = (graph, data) => {
     }
     graph.vertex(u).order = (order + 1) / graph.numVertices();
   }
+  const minCentrality = centrality[vertices[0]],
+    maxCentrality = centrality[vertices[vertices.length - 1]];
+  for (const u of vertices) {
+    graph.vertex(u).centrality = (centrality[u] - minCentrality) / (maxCentrality - minCentrality);
+  }
   return transform(graph);
 };
 

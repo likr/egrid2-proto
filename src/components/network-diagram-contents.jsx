@@ -1,19 +1,24 @@
 import React from 'react';
 import {connect} from 'redux/react';
+import d3scale from 'd3-scale';
 import Layouter from 'eg-graph/lib/layouter/sugiyama';
 import cutoff from '../utils/cutoff';
 import measureText from '../utils/measure-text';
 import {toggleSelectVertex} from '../actions/graph-actions';
 import NetworkDiagramInner from './network-diagram-inner';
 
+const vertexSize = d3scale.linear()
+  .domain([0, 1])
+  .range([5, 20]);
+
 const layouter = new Layouter()
   .layerMargin(10)
-  .vertexWidth(() => 10)
-  .vertexHeight(() => 10)
-  .vertexMargin(3)
+  .vertexWidth(({d}) => vertexSize(d.centrality))
+  .vertexHeight(({d}) => vertexSize(d.centrality))
+  .vertexMargin(5)
   .vertexRightMargin(({d}) => d.width)
   .edgeWidth(() => 3)
-  .edgeMargin(3);
+  .edgeMargin(5);
 
 const calcSizes = (graph) => {
   const sizes = measureText(graph.vertices().map((u) => cutoff(graph.vertex(u).text))),
