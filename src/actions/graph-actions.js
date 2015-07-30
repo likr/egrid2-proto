@@ -3,7 +3,6 @@ import {
   LOAD_GRAPH,
   SET_COARSE_GRAINING_RATIO,
   SELECT_VERTICES,
-  SELECT_VERTICES_BY_PARTICIPANT,
   TOGGLE_SELECT_VERTEX,
   UNSELECT_VERTICES
 } from '../constants';
@@ -35,10 +34,12 @@ export const selectVertices = (vertices) => {
   };
 };
 
-export const selectVerticesByParticipant = (participant) => {
+export const selectVerticesByParticipant = (graph, participant) => {
+  const vertices = graph.vertices()
+    .filter((u) => graph.vertex(u).participants.indexOf(participant) > -1);
   return {
-    type: SELECT_VERTICES_BY_PARTICIPANT,
-    participant
+    type: SELECT_VERTICES,
+    vertices
   };
 };
 

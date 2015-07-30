@@ -3,6 +3,7 @@ import {connect} from 'redux/react';
 import {selectVerticesByParticipant} from '../actions/graph-actions';
 
 @connect((state) => ({
+  graph: state.graph,
   participants: state.participants
 }))
 class ParticipantsList extends React.Component {
@@ -26,7 +27,7 @@ class ParticipantsList extends React.Component {
   }
 
   handleClickParticipant(participant) {
-    this.props.dispatch(selectVerticesByParticipant(participant));
+    this.props.dispatch(selectVerticesByParticipant(this.props.graph, participant));
   }
 }
 
