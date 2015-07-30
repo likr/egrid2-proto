@@ -6,15 +6,15 @@ import Edge from './edge';
 
 const edgeColor = (upper, lower) => {
   if (upper && lower) {
-    const l = Math.max(30, 100 - 10 * Math.max(upper, lower));
+    const l = Math.max(50, 100 - 5 * Math.max(upper, lower));
     return `hsl(300,100%,${l}%)`;
   }
   if (upper) {
-    const l = Math.max(30, 100 - 10 * upper);
+    const l = Math.max(50, 100 - 5 * upper);
     return `hsl(0,100%,${l}%)`;
   }
   if (lower) {
-    const l = Math.max(30, 100 - 10 * lower);
+    const l = Math.max(40, 100 - 10 * lower);
     return `hsl(240,100%,${l}%)`;
   }
   return '#bbb';
