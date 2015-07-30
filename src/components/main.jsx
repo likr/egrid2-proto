@@ -25,8 +25,8 @@ class Main extends React.Component {
         </div>
         <div style={{position: 'absolute', right: 0, top: 0, bottom: 0, width: '300px',
             overflowX: 'hidden', overflowY: 'scroll', background: 'skyblue'}}>
-          <div style={{marginLeft: '10px', marginTop: '10px'}}>
-            <FlatButton label="Clear Selection" onClick={::this.handleClickClearSelectionButton}/>
+          <div style={{margin: '10px'}}>
+            <FlatButton style={{width: '100%'}} label="Clear Selection" onClick={::this.handleClickClearSelectionButton}/>
             <CoarseGrainingController/>
             <ParticipantsList/>
           </div>

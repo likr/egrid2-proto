@@ -65,6 +65,7 @@ class PointVertex extends React.Component {
           style={textStyle}
           x="7"
           y="6"
+          fontFamily='"Lucida Grande","Hiragino Kaku Gothic ProN","ヒラギノ角ゴ ProN W3",Meiryo,メイリオ,sans-serif'
           fontSize="10pt">
           {this.state.text}
         </text>

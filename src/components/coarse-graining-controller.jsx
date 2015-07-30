@@ -16,13 +16,11 @@ class CoarseGrainingController extends React.Component {
     return (
       <div>
         <h3>Coarse-graining criteria</h3>
-        <div style={{width: '100%'}}>
-          <Slider
-            name="coarse-graining"
-            value={this.state.ratio}
-            onChange={::this.handleChange}
-            onDragStop={::this.handleDragStop}/>
-        </div>
+        <Slider
+          name="coarse-graining"
+          value={this.state.ratio}
+          onChange={::this.handleChange}
+          onDragStop={::this.handleDragStop}/>
       </div>
     );
   }
