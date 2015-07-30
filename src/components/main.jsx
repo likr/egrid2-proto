@@ -18,12 +18,13 @@ class Main extends React.Component {
   }
 
   render() {
+    const menuWidth = 400;
     return (
       <div>
-        <div style={{position: 'absolute', left: 0, right: '300px', top: 0, bottom: 0}}>
+        <div style={{position: 'absolute', left: 0, right: `${menuWidth}px`, top: 0, bottom: 0}}>
           <NetworkDiagram/>
         </div>
-        <div style={{position: 'absolute', right: 0, top: 0, bottom: 0, width: '300px',
+        <div style={{position: 'absolute', right: 0, top: 0, bottom: 0, width: `${menuWidth}px`,
             overflowX: 'hidden', overflowY: 'scroll', background: 'skyblue'}}>
           <div style={{margin: '10px'}}>
             <FlatButton style={{width: '100%'}} label="Clear Selection" onClick={::this.handleClickClearSelectionButton}/>
