@@ -6,8 +6,10 @@
   "dependencies": {
     "babel-runtime": "^5.6.15",
     "d3-scale": "^0.1.1",
+    "d3.layout.cloud": "^1.1.1",
     "eg-graph": "0.0.15",
     "firebase": "^2.2.7",
+    "kuromoji": "0.0.2",
     "material-ui": "^0.10.0",
     "react": "^0.13.3",
     "react-mixin": "^1.5.0",

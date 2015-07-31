@@ -6,6 +6,7 @@ import {clearSelection, loadGraph} from '../actions/graph-actions';
 import CoarseGrainingController from './coarse-graining-controller';
 import NetworkDiagram from './network-diagram';
 import ParticipantsList from './participants-list';
+import WordCloud from './word-cloud';
 
 @connect(() => ({}))
 class Main extends React.Component {
@@ -29,6 +30,7 @@ class Main extends React.Component {
           <div style={{margin: '10px'}}>
             <FlatButton style={{width: '100%'}} label="Clear Selection" onClick={::this.handleClickClearSelectionButton}/>
             <CoarseGrainingController/>
+            <WordCloud/>
             <ParticipantsList/>
           </div>
         </div>
