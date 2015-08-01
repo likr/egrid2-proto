@@ -3,7 +3,7 @@ import {connect} from 'redux/react';
 import d3scale from 'd3-scale';
 import d3cloud from 'd3.layout.cloud';
 import kuromojiTokenizer from '../utils/kuromoji-tokenizer';
-import {selectVerticesByWord} from '../actions/graph-actions';
+import {selectVertices} from '../actions/graph-actions';
 
 const textColor = d3scale.category20();
 const textSize = d3scale.linear()
@@ -36,6 +36,7 @@ class WordCloud extends React.Component {
   componentWillReceiveProps(nextProps) {
     if (this.props.graph !== nextProps.graph) {
       const wordCount = new Map();
+      const wordVertex = new Map();
       kuromojiTokenizer.then((tokenizer) => {
         for (const u of nextProps.graph.vertices()) {
           const centrality = nextProps.graph.vertex(u).centrality;
@@ -46,6 +47,10 @@ class WordCloud extends React.Component {
                 wordCount.set(text, 0);
               }
               wordCount.set(text, wordCount.get(text) + centrality);
+              if (!wordVertex.has(text)) {
+                wordVertex.set(text, new Set());
+              }
+              wordVertex.get(text).add(u);
             }
           }
         }
@@ -59,6 +64,9 @@ class WordCloud extends React.Component {
           .font('Impact')
           .fontSize((d) => textSize(d.count))
           .on('end', (layout) => {
+            for (const d of layout) {
+              d.vertices = wordVertex.get(d.text);
+            }
             this.setState({
               words: layout
             });
@@ -73,7 +81,7 @@ class WordCloud extends React.Component {
       return (
         <text
             key={word.text}
-            onClick={this.handleClickWord.bind(this, word.text)}
+            onClick={this.handleClickWord.bind(this, word)}
             textAnchor="middle"
             transform={`translate(${word.x},${word.y})rotate(${word.rotate})`}
             style={{
@@ -99,7 +107,7 @@ class WordCloud extends React.Component {
   }
 
   handleClickWord(word) {
-    this.props.dispatch(selectVerticesByWord(this.props.graph, word));
+    this.props.dispatch(selectVertices(Array.from(word.vertices)));
   }
 }
 

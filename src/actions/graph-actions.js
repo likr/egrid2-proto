@@ -43,15 +43,6 @@ export const selectVerticesByParticipant = (graph, participant) => {
   };
 };
 
-export const selectVerticesByWord = (graph, word) => {
-  const vertices = graph.vertices()
-    .filter((u) => graph.vertex(u).text.indexOf(word) > -1);
-  return {
-    type: SELECT_VERTICES,
-    vertices
-  };
-};
-
 export const toggleSelectVertex = (u) => {
   return {
     type: TOGGLE_SELECT_VERTEX,
