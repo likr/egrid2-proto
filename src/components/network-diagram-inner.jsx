@@ -17,7 +17,7 @@ const edgeColor = (upper, lower) => {
     const l = Math.max(40, 100 - 10 * lower);
     return `hsl(240,100%,${l}%)`;
   }
-  return '#bbb';
+  return '#ddd';
 };
 
 const sortEdges = (edges, upperCount, lowerCount) => {

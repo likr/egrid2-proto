@@ -15,7 +15,7 @@ const layouter = new Layouter()
   .layerMargin(10)
   .vertexWidth(({d}) => vertexSize(d.centrality))
   .vertexHeight(({d}) => vertexSize(d.centrality))
-  .vertexMargin(5)
+  .vertexMargin(10)
   .vertexRightMargin(({d}) => d.width)
   .edgeWidth(() => 3)
   .edgeMargin(5);
