@@ -9,6 +9,7 @@
     "d3.layout.cloud": "^1.1.1",
     "eg-graph": "0.0.15",
     "firebase": "^2.2.7",
+    "hierarchical-clustering": "^1.1.0",
     "kuromoji": "0.0.2",
     "material-ui": "^0.10.0",
     "react": "^0.13.3",
