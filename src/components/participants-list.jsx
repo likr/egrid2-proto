@@ -11,10 +11,10 @@ import clustering from '../utils/clustering';
 }))
 class ParticipantsList extends React.Component {
   render() {
-    const {participants} = this.props;
+    const {participants, graph} = this.props;
     const data = participants.map((participant) => {
-      return new Set(this.props.graph.vertices().filter((u) => {
-        return this.props.graph.vertex(u).participants.indexOf(participant) > -1;
+      return new Set(graph.vertices().filter((u) => {
+        return graph.vertex(u).participants.indexOf(participant) > -1;
       }));
     });
     const cluster = clustering(data);
@@ -24,8 +24,8 @@ class ParticipantsList extends React.Component {
     const vertices = cluster.vertices().map((u) => {
       const {x, y, indices} = cluster.vertex(u);
       const selected = Array.from(this.props.selection).some((v) => {
-        return indices.every((i) => {
-          return this.props.graph.vertex(v).participants.indexOf(participants[i]) > -1;
+        return graph.vertex(v) && indices.every((i) => {
+          return graph.vertex(v).participants.indexOf(participants[i]) > -1;
         });
       });
       const color = selected ? '#f00' : '#000';
