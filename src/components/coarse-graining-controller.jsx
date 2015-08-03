@@ -1,6 +1,6 @@
 import React from 'react';
 import {connect} from 'redux/react';
-import {Slider} from 'material-ui';
+import Slider from 'react-slider';
 import {setCoarseGrainingRatio} from '../actions/graph-actions';
 
 @connect(() => ({}))
@@ -16,22 +16,29 @@ class CoarseGrainingController extends React.Component {
     return (
       <div>
         <h3>Coarse-graining criteria</h3>
-        <Slider
-          name="coarse-graining"
-          value={this.state.ratio}
-          onChange={::this.handleChange}
-          onDragStop={::this.handleDragStop}/>
+        <div>
+          <Slider
+              min={0}
+              max={1}
+              step={0.01}
+              value={this.state.ratio}
+              withBars
+              onChange={::this.handleChange}
+              onAfterChange={::this.handleAfterChange}>
+            <span>{this.state.ratio.toFixed(2)}</span>
+          </Slider>
+        </div>
       </div>
     );
   }
 
-  handleChange(_, value) {
+  handleChange(value) {
     this.setState({
       ratio: value
     });
   }
 
-  handleDragStop() {
+  handleAfterChange() {
     this.props.dispatch(setCoarseGrainingRatio(this.state.ratio));
   }
 }
