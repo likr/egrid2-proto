@@ -74,9 +74,9 @@ class ParticipantsList extends React.Component {
 
   handleClickNode(indices) {
     const graph = this.props.graph;
-    const participants = new Set(indices.map((i) => this.props.participants[i]));
+    const participants = indices.map((i) => this.props.participants[i]);
     const vertices = graph.vertices().filter((u) => {
-      return graph.vertex(u).participants.some((p) => participants.has(p));
+      return participants.every((p) => graph.vertex(u).participants.indexOf(p) > -1);
     });
     this.props.dispatch(selectVertices(vertices));
   }
