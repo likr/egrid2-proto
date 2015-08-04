@@ -47,7 +47,13 @@ class Edge extends React.Component {
   }
 
   componentDidUpdate() {
-    animate(React.findDOMNode(this).firstChild, {
+    const element = React.findDOMNode(this).firstChild;
+    for (const child of element.children) {
+      if (child.tagName === 'animate') {
+        element.removeChild(child);
+      }
+    }
+    animate(element, {
       attributeName: 'd',
       to: svgPath(this.props.points),
       dur: this.props.dur,

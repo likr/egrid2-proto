@@ -10,7 +10,6 @@ export const animate = (element, args) => {
   anim.setAttribute('fill', 'freeze');
   anim.setAttribute('to', to);
   anim.setAttribute('begin', begin);
-  anim.setAttribute('end', begin + dur);
   anim.addEventListener('endEvent', () => {
     element.setAttribute(attributeName, to);
     element.removeChild(anim);
@@ -29,9 +28,9 @@ export const animateTransform = (element, args) => {
   anim.setAttribute('fill', 'freeze');
   anim.setAttribute('to', to);
   anim.setAttribute('begin', begin);
-  anim.setAttribute('end', begin + dur);
   anim.addEventListener('endEvent', () => {
-    // TODO
+    element.setAttribute('transform', `${type}(${to.split().join(',')})`);
+    element.removeChild(anim);
   });
   element.appendChild(anim);
 };
