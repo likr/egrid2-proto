@@ -101,6 +101,7 @@ class NetworkDiagram extends React.Component {
         <g className="contents" transform={svgTransform}>
           <NetworkDiagramContents/>
         </g>
+        <animate/>
       </svg>
     );
   }

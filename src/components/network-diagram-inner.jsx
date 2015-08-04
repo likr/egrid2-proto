@@ -1,6 +1,4 @@
 import React from 'react';
-import mixin from 'react-mixin';
-import Animate from '../react-animate';
 import PointVertex from './point-vertex';
 import Edge from './edge';
 
@@ -41,41 +39,19 @@ const sortEdges = (edges, upperCount, lowerCount) => {
 };
 
 class NetworkDiagramInner extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      t: 0
-    };
-  }
-
-  componentWillReceiveProps(nextProps) {
-    if (this.props.layout !== nextProps.layout) {
-      this.setState({
-        t: 0
-      });
-    }
-  }
-
-  componentDidUpdate(prevProps) {
-    if (this.props.layout !== prevProps.layout) {
-      this.animate({
-        t: 1
-      }, 1000);
-    }
-  }
-
   render() {
-    const {layout, selection, upperCount, lowerCount} = this.props,
-      {t} = this.state;
+    const {layout, selection, upperCount, lowerCount} = this.props;
+    const dur = 1, delay = 0.5;
 
     const vertices = layout.vertices.map((d) => {
       const color = selection.has(d.u) ? 'red' : 'black';
       return (
         <PointVertex
             key={d.u}
+            dur={dur}
+            delay={delay}
             u={d.u}
             text={d.text}
-            t={t}
             x={d.x}
             y={d.y}
             x0={d.x0}
@@ -96,7 +72,8 @@ class NetworkDiagramInner extends React.Component {
       return (
         <Edge
             key={`${u}:${v}`}
-            t={t}
+            dur={dur}
+            delay={delay}
             points={d.points}
             points0={d.points0}
             reversed={d.reversed}
@@ -116,7 +93,5 @@ class NetworkDiagramInner extends React.Component {
     );
   }
 }
-
-mixin(NetworkDiagramInner.prototype, Animate);
 
 export default NetworkDiagramInner;

@@ -1,5 +1,6 @@
 import React from 'react';
 import cutoff from '../utils/cutoff';
+import {animateTransform} from '../utils/shinsekai';
 
 class PointVertex extends React.Component {
   constructor(props) {
@@ -9,17 +10,28 @@ class PointVertex extends React.Component {
     };
   }
 
-  shouldComponentUpdate(nextProps, nextState) {
-    const attrs = ['t', 'color', 'x', 'y', 'x0', 'y0', 'text'];
-    for (const attr of attrs) {
-      if (this.props[attr] !== nextProps[attr]) {
-        return true;
-      }
+  componentDidMount() {
+    const {x, y, x0, y0} = this.props;
+    animateTransform(React.findDOMNode(this), {
+      type: 'translate',
+      from: `${x0} ${y0}`,
+      to: `${x} ${y}`,
+      dur: this.props.dur,
+      delay: this.props.delay
+    });
+  }
+
+  componentDidUpdate(prevProps) {
+    const {x, y, x0, y0} = this.props;
+    if (x !== prevProps.x || y !== prevProps.y) {
+      animateTransform(React.findDOMNode(this), {
+        type: 'translate',
+        from: `${x0} ${y0}`,
+        to: `${x} ${y}`,
+        dur: this.props.dur,
+        delay: this.props.delay
+      });
     }
-    if (this.state.text !== nextState.text) {
-      return true;
-    }
-    return false;
   }
 
   handleClick() {
@@ -41,9 +53,7 @@ class PointVertex extends React.Component {
   }
 
   render() {
-    const {t, x0, y0, width, height, color} = this.props;
-    const x = (this.props.x - x0) * t + x0,
-          y = (this.props.y - y0) * t + y0;
+    const {x0, y0, width, height, color} = this.props;
     const textStyle = {
       userSelect: 'none',
       MozUserSelect: 'none',
@@ -54,7 +64,7 @@ class PointVertex extends React.Component {
       <g
           className="vertex"
           style={{cursor: 'pointer'}}
-          transform={`translate(${x},${y})`}
+          transform={`translate(${x0},${y0})`}
           onClick={this.handleClick.bind(this)}
           onMouseOver={this.handleMouseOver.bind(this)}
           onMouseLeave={this.handleMouseLeave.bind(this)}>
