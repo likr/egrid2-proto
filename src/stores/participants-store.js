@@ -2,9 +2,6 @@ import {LOAD_GRAPH} from '../constants';
 
 const handleLoadGraph = (state, data) => {
   const participants = new Set();
-  for (const participant of state) {
-    participants.add(participant);
-  }
   for (const {d} of data.vertices) {
     for (const participant of d.participants) {
       participants.add(participant);

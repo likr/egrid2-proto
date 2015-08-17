@@ -21,6 +21,14 @@ class PointVertex extends React.Component {
     });
   }
 
+  componentWillReceiveProps(nextProps) {
+    if (this.props.text !== nextProps.text) {
+      this.setState({
+        text: cutoff(nextProps.text)
+      });
+    }
+  }
+
   componentDidUpdate(prevProps) {
     const {x, y, x0, y0} = this.props;
     if (x !== prevProps.x || y !== prevProps.y) {

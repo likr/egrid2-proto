@@ -46,6 +46,9 @@ const transform = (graph) => {
 };
 
 const handleLoadGraph = (graph, data) => {
+  for (const u of graph.vertices()) {
+    graph.removeVertex(u);
+  }
   for (const {u, d} of data.vertices) {
     graph.addVertex(u, Object.assign({
       x: null,

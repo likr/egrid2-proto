@@ -4,6 +4,7 @@ import {connect} from 'redux/react';
 import {FlatButton} from 'material-ui';
 import {clearSelection, loadGraph} from '../actions/graph-actions';
 import CoarseGrainingController from './coarse-graining-controller';
+import FileInputDialog from './file-input-dialog';
 import NetworkDiagram from './network-diagram';
 import ParticipantsList from './participants-list';
 import WordCloud from './word-cloud';
@@ -28,14 +29,30 @@ class Main extends React.Component {
         <div style={{position: 'absolute', right: 0, top: 0, bottom: 0, width: `${menuWidth}px`,
             overflowX: 'hidden', overflowY: 'scroll', background: 'skyblue'}}>
           <div style={{margin: '10px'}}>
-            <FlatButton style={{width: '100%'}} label="Clear Selection" onClick={::this.handleClickClearSelectionButton}/>
+            <div style={{marginBottom: '10px'}}>
+              <FlatButton style={{width: '100%'}} label="Load Data" onClick={::this.handleClickLoadDataButton}/>
+            </div>
+            <div>
+              <FlatButton style={{width: '100%'}} label="Clear Selection" onClick={::this.handleClickClearSelectionButton}/>
+            </div>
             <CoarseGrainingController/>
             <WordCloud/>
             <ParticipantsList/>
           </div>
+          <FileInputDialog
+              callback={::this.handleFileSelected}
+              ref="dialog"/>
         </div>
-    </div>
+      </div>
     );
+  }
+
+  handleClickLoadDataButton() {
+    this.refs.dialog.show();
+  }
+
+  handleFileSelected(data) {
+    this.props.dispatch(loadGraph(JSON.parse(data)));
   }
 
   handleClickClearSelectionButton() {
