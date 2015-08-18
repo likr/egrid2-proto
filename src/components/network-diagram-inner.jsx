@@ -1,6 +1,11 @@
 import React from 'react';
+import d3scale from 'd3-scale';
 import PointVertex from './point-vertex';
+import TextLabel from './text-label';
 import Edge from './edge';
+
+
+const vertexColor = d3scale.category20();
 
 const edgeColor = (upper, lower) => {
   if (upper && lower) {
@@ -44,9 +49,29 @@ class NetworkDiagramInner extends React.Component {
     const dur = 1, delay = 0.5;
 
     const vertices = layout.vertices.map((d) => {
-      const color = selection.has(d.u) ? 'red' : 'black';
+      const fillColor = vertexColor(d.community),
+            strokeColor = selection.has(d.u) ? '#f00' : '#bbb';
       return (
         <PointVertex
+            key={d.u}
+            dur={dur}
+            delay={delay}
+            u={d.u}
+            x={d.x}
+            y={d.y}
+            x0={d.x0}
+            y0={d.y0}
+            width={d.width}
+            height={d.height}
+            fillColor={fillColor}
+            strokeColor={strokeColor}
+            selectVertex={this.props.toggleSelectVertex}/>
+      );
+    });
+
+    const labels = layout.vertices.map((d) => {
+      return (
+        <TextLabel
             key={d.u}
             dur={dur}
             delay={delay}
@@ -56,9 +81,9 @@ class NetworkDiagramInner extends React.Component {
             y={d.y}
             x0={d.x0}
             y0={d.y0}
-            width={d.width}
-            height={d.height}
-            color={color}
+            textWidth={d.textWidth}
+            textHeight={d.textHeight}
+            selected={selection.has(d.u)}
             selectVertex={this.props.toggleSelectVertex}/>
       );
     });
@@ -88,6 +113,9 @@ class NetworkDiagramInner extends React.Component {
         </g>
         <g className="vertices">
           {vertices}
+        </g>
+        <g className="labels">
+          {labels}
         </g>
       </g>
     );

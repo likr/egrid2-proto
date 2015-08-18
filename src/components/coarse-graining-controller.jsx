@@ -8,7 +8,7 @@ class CoarseGrainingController extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      ratio: 0
+      ratio: 0.7
     };
   }
 

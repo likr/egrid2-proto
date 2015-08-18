@@ -1,6 +1,7 @@
 import Graph from 'eg-graph/lib/graph';
 import transformer from 'eg-graph/lib/transformer';
 import katz from 'eg-graph/lib/network/centrality/katz';
+import newman from 'eg-graph/lib/network/community/newman';
 import {
   LOAD_GRAPH,
   SET_COARSE_GRAINING_RATIO
@@ -9,7 +10,7 @@ import {
 class CoarseGrainingTransformer extends transformer.CoarseGrainingTransformer {
   constructor() {
     super();
-    this.ratio = 0;
+    this.ratio = 0.7;
   }
 }
 
@@ -64,6 +65,7 @@ const handleLoadGraph = (graph, data) => {
     }, d));
   }
   const centrality = katz(graph);
+  const community = newman(graph);
   const vertices = graph.vertices();
   vertices.sort((u, v) => centrality[u] - centrality[v]);
   let order = 0;
@@ -80,6 +82,7 @@ const handleLoadGraph = (graph, data) => {
     maxCentrality = centrality[vertices[vertices.length - 1]];
   for (const u of vertices) {
     graph.vertex(u).centrality = (centrality[u] - minCentrality) / (maxCentrality - minCentrality);
+    graph.vertex(u).community = community[u];
   }
   return transform(graph);
 };

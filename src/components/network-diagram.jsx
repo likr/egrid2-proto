@@ -12,7 +12,7 @@ class NetworkDiagram extends React.Component {
       draggin: false,
       zoomX: 0,
       zoomY: 0,
-      zoomScale: 0.5
+      zoomScale: 1
     };
   }
 

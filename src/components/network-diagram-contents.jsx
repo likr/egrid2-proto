@@ -2,26 +2,26 @@ import React from 'react';
 import {connect} from 'redux/react';
 import d3scale from 'd3-scale';
 import Layouter from 'eg-graph/lib/layouter/sugiyama';
-import cutoff from '../utils/cutoff';
 import measureText from '../utils/measure-text';
 import {toggleSelectVertex} from '../actions/graph-actions';
 import NetworkDiagramInner from './network-diagram-inner';
 
 const vertexSize = d3scale.linear()
   .domain([0, 1])
-  .range([5, 20]);
+  .range([15, 30]);
 
 const layouter = new Layouter()
   .layerMargin(10)
   .vertexWidth(({d}) => vertexSize(d.centrality))
   .vertexHeight(({d}) => vertexSize(d.centrality))
   .vertexMargin(10)
-  .vertexRightMargin(({d}) => d.width)
+  .vertexLeftMargin(() => 50)
+  .vertexRightMargin(() => 50)
   .edgeWidth(() => 3)
   .edgeMargin(5);
 
 const calcSizes = (graph) => {
-  const sizes = measureText(graph.vertices().map((u) => cutoff(graph.vertex(u).text))),
+  const sizes = measureText(graph.vertices().map((u) => graph.vertex(u).text)),
         result = {};
   graph.vertices().forEach((u, i) => {
     result[u] = sizes[i];
@@ -40,13 +40,15 @@ const layout = (graph, state) => {
   const vertices = [];
   for (const u of graph.vertices()) {
     const d = graph.vertex(u);
-    const {text, selected} = d;
+    const {text, selected, community} = d;
     const {x, y, width, height} = positions.vertices[u];
+    const textWidth = sizes[u].width;
+    const textHeight = sizes[u].height;
     const x0 = d.x === null ? x : d.x;
     const y0 = d.y === null ? 0 : d.y;
     vertices.push({
       u, selected, x, y, x0, y0, width, height,
-      text: text,
+      textWidth, textHeight, community, text,
       rightMargin: d.width
     });
   }

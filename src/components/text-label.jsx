@@ -1,7 +1,7 @@
 import React from 'react';
 import {animateTransform} from '../utils/shinsekai';
 
-class PointVertex extends React.Component {
+class TextLabel extends React.Component {
   componentDidMount() {
     const {x, y, x0, y0} = this.props;
     animateTransform(React.findDOMNode(this), {
@@ -37,22 +37,40 @@ class PointVertex extends React.Component {
   }
 
   render() {
-    const {x0, y0, width, height, strokeColor, fillColor} = this.props;
+    const {text, x0, y0, textWidth, textHeight, selected} = this.props;
     return (
       <g
-          className="vertex"
           style={{cursor: 'pointer'}}
           transform={`translate(${x0},${y0})`}
           onClick={this.handleClick.bind(this)}>
-        <ellipse
-          rx={width / 2}
-          ry={height / 2}
-          fill={fillColor}
-          stroke={strokeColor}
-          strokeWidth="2"/>
+        {selected ? (
+          <rect
+            fill="white"
+            opacity="0.8"
+            x={-textWidth / 2}
+            y={-textHeight + 7}
+            width={textWidth}
+            height={textHeight}/>
+        ) : null}
+        {selected ? (
+          <text
+              style={{
+                userSelect: 'none',
+                MozUserSelect: 'none',
+                WebkitUserSelect: 'none',
+                MsUserSelect: 'none'
+              }}
+              x="0"
+              y="7"
+              textAnchor="middle"
+              fontFamily='"Lucida Grande","Hiragino Kaku Gothic ProN","ヒラギノ角ゴ ProN W3",Meiryo,メイリオ,sans-serif'
+              fontSize="14">
+            {text}
+          </text>
+        ) : null}
       </g>
     );
   }
 }
 
-export default PointVertex;
+export default TextLabel;

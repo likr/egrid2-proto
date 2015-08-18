@@ -4,7 +4,7 @@ const measureText = (texts) => {
         svgElement = document.createElementNS('http://www.w3.org/2000/svg', 'svg'),
         textElement = document.createElementNS('http://www.w3.org/2000/svg', 'text'),
         result = [];
-  textElement.setAttribute('font-size', '10pt');
+  textElement.setAttribute('font-size', '14');
   svgElement.appendChild(textElement);
   bodyElement.appendChild(svgElement);
 
