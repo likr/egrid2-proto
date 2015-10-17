@@ -83,7 +83,8 @@ class NetworkDiagramInner extends React.Component {
             y0={d.y0}
             textWidth={d.textWidth}
             textHeight={d.textHeight}
-            selected={selection.has(d.u)}
+            fillColor={vertexColor(d.community)}
+            selected={selection.has(d.u) || true}
             selectVertex={this.props.toggleSelectVertex}/>
       );
     });

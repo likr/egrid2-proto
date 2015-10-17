@@ -11,12 +11,10 @@ const vertexSize = d3scale.linear()
   .range([15, 30]);
 
 const layouter = new Layouter()
-  .layerMargin(10)
+  .layerMargin(140)
   .vertexWidth(({d}) => vertexSize(d.centrality))
   .vertexHeight(({d}) => vertexSize(d.centrality))
-  .vertexMargin(10)
-  .vertexLeftMargin(() => 50)
-  .vertexRightMargin(() => 50)
+  .vertexMargin(5)
   .edgeWidth(() => 3)
   .edgeMargin(5);
 
@@ -29,7 +27,7 @@ const calcSizes = (graph) => {
   return result;
 };
 
-const layout = (graph, state) => {
+const layout = (graph) => {
   const sizes = calcSizes(graph);
   for (const u of graph.vertices()) {
     Object.assign(graph.vertex(u), sizes[u]);

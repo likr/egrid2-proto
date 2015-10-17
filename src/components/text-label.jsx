@@ -37,7 +37,7 @@ class TextLabel extends React.Component {
   }
 
   render() {
-    const {text, x0, y0, textWidth, textHeight, selected} = this.props;
+    const {text, x0, y0, textWidth, textHeight, fillColor, selected} = this.props;
     return (
       <g
           style={{cursor: 'pointer'}}
@@ -62,6 +62,7 @@ class TextLabel extends React.Component {
               }}
               x="0"
               y="7"
+              fill={fillColor}
               textAnchor="middle"
               fontFamily='"Lucida Grande","Hiragino Kaku Gothic ProN","ヒラギノ角ゴ ProN W3",Meiryo,メイリオ,sans-serif'
               fontSize="14">
